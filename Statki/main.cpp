@@ -5,7 +5,7 @@ using namespace std;
 int main()
 {
     cout<<"Hello";
-    sleep(5000);
+    sleep();
     cout<<" World"<<endl;
     return 0;
 }
