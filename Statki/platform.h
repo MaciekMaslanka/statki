@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 #ifdef _WIN32
     #include <windows.h>
 #else
@@ -10,11 +10,19 @@
     #define _ships_
 #endif
 
-inline void sleep_ms(int ms) 
+inline void sleepMs(int ms) 
 {
     #ifdef _WIN32
         Sleep(ms);
     #else
         usleep(ms * 1000);
+    #endif
+}
+inline void clearScreen()
+{
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
     #endif
 }

@@ -25,10 +25,12 @@ Klasy:
     ilość samolotów
     /może robić ataki obszarowe, jeśli ma więcej niż 20 samolotów. 
     /Im więcej samolotów tym większa szansa na trafienie
+    /nie może normalnie strzelać
 }
 -niszczyciel
 {
     ilosc torped
-    /może insta killować statki mniejsze lub równym niż 3 pola.
-    /statkom większym niż 3 pola uszkadza 75% przedziałów
+    /może insta killować statki mniejsze lub równym niż 3 pola, torpedami.
+    /statkom większym niż 3 pola uszkadza 75% przedziałów, torpedami
+    /może normalnie strzelać
 }
