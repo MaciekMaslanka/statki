@@ -16,7 +16,7 @@ const string SELECTED_ENEMY_SHIP = "\033[91m";
 const string PLAYER_SHIP = "\033[92m";
 const string UNDERWATER_PLAYER_SHIP = "\033[32m";
 const string SELECTED_PLAYER_SHIP = "\033[96m";
-const string HIT = "\033[93m🔥\033[0m";
+const string DESTROYED = "\033[93m🔥\033[0m";
 
 enum shipSize{small='s', medium='m', large='l'};
 class Ship
@@ -45,6 +45,9 @@ class Ship
         virtual bool canShoot() {return false;}
         virtual bool canTorpedoAttack() {return false;}
         virtual bool canAirStrike() {return false;}
+
+        virtual bool isStealth() const {return false;}
+        virtual bool toogleDive() {return false;}
 
         void move(array<int, 2> targetPosition)
         {
@@ -81,7 +84,7 @@ class Ship
         float getHealth() const {return health;}
         bool getIsAlive() const {return isAlive;}
         int getDetectionRange() const {return detectionRange;}
-        virtual int getType() const {return 0;}
+        virtual char getSymbol() const {return '?';}
         //settery
         void setPosition(std::array<int, 2>targetPosition) {position = targetPosition;}
         void setFuelAmount(int targetFuelAmount) {fuelAmount = targetFuelAmount;}
@@ -102,12 +105,31 @@ class Submarine : public Ship
     ~Submarine() = default;
 
     bool canTorpedoAttack() override {return true;}
+    bool isStealth() const override
+    {
+        return isUnderwater && isAlive;
+    }
+    bool toogleDive() override
+    {
+        if (!isAlive) return false;
+        isUnderwater = !isUnderwater;
+        if (isUnderwater)
+        {
+            detectionRange /= 2;
+        }
+        else
+        {
+            detectionRange *= 2;
+            turnsUnderWater = 0;
+        }
+        return isUnderwater;
+    }
     
     //gettery
     bool getIsUnderwater() const {return isUnderwater;}
     int getTurnsUnderWater() const {return turnsUnderWater;}
     int getTorpedoesAmount() const {return torpedoesAmount;}
-    int getType() const {return 1;}
+    char getSymbol() const override {return 'S';}
     //settery
     void setIsUnderwater(bool isUnderwater) {this->isUnderwater = isUnderwater;}
     void setTurnsUnderwater(int turnsUnderwater) {this->turnsUnderWater = turnsUnderWater;}
@@ -127,7 +149,7 @@ class AircraftCarrier : public Ship
 
     //gettery
     int getAircraftAmount() const {return aircraftAmount;}
-    int getType() const {return 2;}
+    char getSymbol() const override {return 'A';}
     //settery
     void setAircraftAmount(int aircraftAmount) {this->aircraftAmount = aircraftAmount;}
 };
@@ -143,19 +165,21 @@ class Destroyer : public Ship
     bool canShoot() override {return true;}
     bool canTorpedoAttack() override {return true;}
 
-    int getType() const {return 3;}
+    char getSymbol() const override {return 'D';}
 };
 
 class Cruiser : public Ship
 {
+    public:
 
+    char getSymbol() const override {return 'C';}
 };
 
 class Board
 {
     private:
         static const int SIZE = 20;
-        char grid[SIZE][SIZE];
+        array<array<Ship*, SIZE>, SIZE> grid;
 
         bool isVisible(int x, int y, vector<Ship*>& fleet) const
         {
@@ -176,40 +200,6 @@ class Board
             }
             return false;
         }
-        void placePlayerShip(Ship* ship)
-        {
-            array<int, 2> pos = ship->getPosition();
-            /*typy statków:
-                0- podstawowy
-                1-submarine
-                2-aircraft carrier
-                3-destroyer
-            */
-           int shipType = ship->getType();
-           switch (shipType)
-           {
-            case 1: //submarine
-                grid[pos[1]][pos[0]] = 'S';
-                break;
-            case 2: //aircraft carrier
-                grid[pos[1]][pos[0]] = 'A';
-                break;
-            case 3: //destroyer
-                grid[pos[1]][pos[0]] = 'D';
-                break;
-           default:
-            break;
-           }
-        }
-        void placeEnemyShip(Ship* ship)
-        {
-            array<int, 2> pos = ship->getPosition();
-            if (ship->getType() == 1 && static_cast<Submarine*>(ship)->getIsUnderwater() == true)
-            {
-                return;
-            }
-            grid[pos[1]][pos[0]] = 'E';
-        }
     public:
         Board()
         {
@@ -217,55 +207,75 @@ class Board
             {
                 for(int j=0; j<SIZE; j++)
                 {
-                    grid[i][j] = '.';
+                    grid[i][j] = nullptr;
                 }
             }
         }
-        void display(vector<Ship*>& playerFleet, vector<Ship*> enemyFleet)
+        void placeFleet(vector<Ship*>& fleet)
         {
-            //ustawienie statków gracza na planszy
-            for(Ship* ship : playerFleet)
+            for(auto ship : fleet)
             {
-                placePlayerShip(ship);
+                array<int, 2> pos = ship->getPosition();
+                grid[pos[1]][pos[0]] = ship;
             }
-            //ustawienie statków wroga na planszy
-            for(Ship* ship : enemyFleet)
-            {
-                placeEnemyShip(ship);
-            }
-            //wyswietlenie
-            //zrobić tak żeby tablica miała odwołania do statków a nie znaki
+        }
+        void display(vector<Ship*>& playerFleet)
+        {
             for(int y=0; y<SIZE; y++)
             {
                 for(int x=0; x<SIZE; x++)
                 {
-                    bool visible = isVisible(x, y, playerFleet);
-                    if(grid[y][x] == 'S') //submarine
+                    Ship* tile = grid[y][x];
+                    if(tile != nullptr) //jezeli jest jakis statek
                     {
-                        cout<<PLAYER_SHIP<<"S "<<RESET;
-                    }
-                    else if(grid[y][x] == 'A') //aircraft carrier
-                    {
-                        cout<<PLAYER_SHIP<<"A "<<RESET;
-                    }
-                    else if(grid[y][x] == 'D') //destroyer
-                    {
-                        cout<<PLAYER_SHIP<<"D "<<RESET;
-                    }
-                    else if(grid[y][x] == 'E') //enemy ship
-                    {
-                        if(visible)
+                        bool isPlayerShip = false;
+                        for(auto ship : playerFleet)
                         {
-                            cout<<ENEMY_SHIP<<"E "<<RESET;
+                            if(ship == tile)
+                            {
+                                isPlayerShip = true;
+                                break;
+                            }
                         }
-                        else
+
+                        if(isPlayerShip) //jezeli jest gracza
                         {
-                            cout<<DARK_BLUE_WATER<<" ";
+                            if (tile->isStealth())
+                            {
+                                cout<<UNDERWATER_PLAYER_SHIP<<tile->getSymbol()<<RESET<<" ";
+                            }
+                            else if (tile->getIsAlive() == false)
+                            {
+                                cout<<DESTROYED;
+                            }
+                            else
+                            {
+                                cout<<PLAYER_SHIP<<tile->getSymbol()<<RESET<<" ";
+                            }
+                        }
+                        else //jezeli jest wroga
+                        {
+                            if (isVisible(x, y, playerFleet) && !tile->isStealth())
+                            {
+                                if (tile->getIsAlive() == false)
+                                {
+                                    cout<<DESTROYED;
+                                }
+                                else
+                                {
+                                    cout<<ENEMY_SHIP<<tile->getSymbol()<<RESET<<" ";
+                                }
+                                
+                            }
+                            else
+                            {
+                                cout<<LIGHT_BLUE_WATER<<" ";
+                            }
                         }
                     }
-                    else //woda
+                    else //jezeli nie ma statku
                     {
-                        if(isVisible(x, y, playerFleet))
+                        if (isVisible(x, y, playerFleet))
                         {
                             cout<<LIGHT_BLUE_WATER<<" ";
                         }
@@ -277,7 +287,6 @@ class Board
                 }
                 cout<<"\n";
             }
-            cout<<RESET;
         }
 };
 class Player
@@ -305,7 +314,6 @@ int main()
     Board b1;
     Ship* ubot = new Submarine({10, 5}, medium, 50, 5, 100);
     Ship* ubot2 = new Submarine({9, 5}, medium, 50, 5, 100);
-    static_cast<Submarine*>(ubot2)->setIsUnderwater(false);
     Ship* carrier = new AircraftCarrier({7, 10}, large, 50, 7, 100);
     Ship* destroyer = new Destroyer({5, 5}, medium, 50, 6, 100);
     vector<Ship*> fleet1;
@@ -314,6 +322,15 @@ int main()
     fleet1.push_back(carrier);
     fleet2.push_back(destroyer);
     fleet2.push_back(ubot2);
-    b1.display(fleet1, fleet2);
+    b1.placeFleet(fleet1);
+    b1.placeFleet(fleet2);
+    b1.display(fleet1);
+    sleepMs(3000);
+    clearScreen();
+    ubot->toogleDive();
+    b1.display(fleet1);
+    sleepMs(3000);
+    clearScreen();
+    b1.display(fleet2);
     return 0;
 }
