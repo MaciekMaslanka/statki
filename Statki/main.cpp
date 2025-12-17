@@ -19,6 +19,7 @@ const string SELECTED_PLAYER_SHIP = "\033[96m";
 const string DESTROYED = "\033[93m🔥\033[0m";
 
 enum shipSize{small='s', medium='m', large='l'};
+enum shipType{submarine, aCarrier, destroyer, cruiser};
 class Ship
 {
     protected:
@@ -79,7 +80,7 @@ class Ship
 
         //gettery
         std::array<int, 2> getPosition() const {return position;}
-        int getLength() const {return size;}
+        char getSize() const {return size;}
         int getFuelAmount() const {return fuelAmount;}
         float getHealth() const {return health;}
         bool getIsAlive() const {return isAlive;}
@@ -171,7 +172,10 @@ class Destroyer : public Ship
 class Cruiser : public Ship
 {
     public:
-
+    Cruiser(array<int, 2> position, char size, int fuelAmount, int detectionRange, float health, bool isAlive = true)
+    :Ship(position, size, fuelAmount, detectionRange, health, isAlive)
+    {
+    }
     char getSymbol() const override {return 'C';}
 };
 
@@ -183,20 +187,16 @@ class Board
 
         bool isVisible(int x, int y, vector<Ship*>& fleet) const
         {
-            for (auto ship : fleet)
+            for (const Ship* ship : fleet)
             {
-                if(ship->getIsAlive() == false) continue;
+                if(!ship->getIsAlive()) continue;
 
-                array<int, 2> pos = ship->getPosition();
-                int shipX = pos[0], shipY = pos[1];
-                float dx = shipX - x;
-                float dy = shipY - y;
-                float dist = ceil(sqrt(dx*dx + dy*dy));
+                array<int, 2> shipPos = ship->getPosition();
+                int dist = abs(shipPos[0] - x) + abs(shipPos[1] - y);
                 if (dist <= ship->getDetectionRange())
                 {
                     return true;
                 }
-
             }
             return false;
         }
@@ -309,18 +309,49 @@ class Player
         //settery
         void setMovePoints(int movePoints) {this->movePoints = movePoints;}
 };
+class Game
+{
+    private:
+        Board board;
+        Player* player1;
+        Player* player2;
+    public:
+        Game(Player* player1, Player* player2)
+        :player1(player1), player2(player2)
+        {
+            this->board = Board();
+        }
+        Ship* createShip(shipType type, array<int, 2> position)
+        {
+            switch (type)
+            {
+                case submarine:
+                    return new Submarine(position, medium, 50, 5, 100);
+                case aCarrier:
+                    return new AircraftCarrier(position, large, 50, 7, 100);
+                case destroyer:
+                    return new Destroyer(position, medium, 50, 6, 100);
+                case cruiser:
+                    return new Cruiser(position, large, 50, 6, 100);
+                default:
+                    return nullptr;
+            }
+        }
+        ~Game() = default;
+};
 int main()
 {
     Board b1;
-    Ship* ubot = new Submarine({10, 5}, medium, 50, 5, 100);
-    Ship* ubot2 = new Submarine({9, 5}, medium, 50, 5, 100);
-    Ship* carrier = new AircraftCarrier({7, 10}, large, 50, 7, 100);
-    Ship* destroyer = new Destroyer({5, 5}, medium, 50, 6, 100);
+    Game game(nullptr, nullptr);
+    Ship* ubot = game.createShip(submarine, {10, 5});
+    Ship* ubot2 = game.createShip(submarine, {9, 5});
+    Ship* carrier = game.createShip(aCarrier, {7, 10});
+    Ship* dest = game.createShip(destroyer, {5, 5});
     vector<Ship*> fleet1;
     vector<Ship*> fleet2;
     fleet1.push_back(ubot);
     fleet1.push_back(carrier);
-    fleet2.push_back(destroyer);
+    fleet2.push_back(dest);
     fleet2.push_back(ubot2);
     b1.placeFleet(fleet1);
     b1.placeFleet(fleet2);
