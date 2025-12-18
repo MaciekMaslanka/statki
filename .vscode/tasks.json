@@ -6,7 +6,11 @@
             "command": "/usr/bin/g++",
             "args": [
                 "-g",
-                "${workspaceFolder}/Statki/*.cpp",
+                "-std=c++17",
+                "-Wall",
+                "-Wextra",
+                "-I${workspaceFolder}/Statki/include",
+                "${workspaceFolder}/Statki/src/*.cpp",
                 "-o",
                 "${workspaceFolder}/Statki/main"
             ]
