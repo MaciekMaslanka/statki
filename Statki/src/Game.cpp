@@ -9,12 +9,31 @@ void Game::switchTurns()
     player2->setIsHisTurn(!player2->getIsHisTurn());
 }
 
-void Game::placeShips(int shipsAmount[4], Player* player1, Player* player2, int mapSize)
+void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSize, int xMax, int xMin)
 {
-    vector<array<int, 2>> occupiedPositions;
+    vector<array<int, 2>> occupiedSpots;
+    shipType types[4] = {submarine, aCarrier, destroyer, cruiser};
+    for (int t=0; t<4; t++)
+    {
+        for (int i = 0; i < shipsAmount[t]; i++)
+        {
+            array<int, 2> pos;
+            do
+            {
+                pos = {
+                    (rand() % (xMax - xMin)) + xMin, //x
+                    rand() % mapSize //y
+                };
+            } 
+            while (isOccupied(pos, occupiedSpots));
+            occupiedSpots.push_back(pos);
+            player->addShip(createShip(types[t], pos));
+        }
+    }
+    board->placeFleet(player->getFleet());
 }
 
-bool Game::isOccupied(array<int, 2> pos, vector<array<int, 2>>& occupiedPositions)
+bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPositions)
 {
     for (array<int, 2> occupiedPos : occupiedPositions)
     {
@@ -81,7 +100,8 @@ void Game::beginGame()
     player1 = new Player(fleet1, 5, name1);
     player2 = new Player(fleet2, 5, name2);
     //gracz 1 zaczyna po lewej a 2 po prawej
-    placeShips(shipsAmount, player1, player2, mapSize);
+    placePlayerShips(shipsAmount, player1, mapSize, 10, 0);
+    placePlayerShips(shipsAmount, player2, mapSize, mapSize, mapSize-10);
 
     //ustawienie na planszy
     board->placeFleet(player1->getFleet());
@@ -92,5 +112,6 @@ void Game::beginGame()
 }
 void Game::gameLoop()
 {
-
+    board->display(player1->getFleet());
+    board->display(player2->getFleet());
 }

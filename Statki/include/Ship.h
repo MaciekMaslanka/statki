@@ -9,7 +9,7 @@ class Ship
 {
     protected:
         std::array<int, 2> position;
-        int size; //zmienić to na shipSize
+        shipSize size;
         int fuelAmount;
         int initialFuelAmount;
         int detectionRange;

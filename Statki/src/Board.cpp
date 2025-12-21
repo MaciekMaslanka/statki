@@ -3,7 +3,7 @@ using namespace std;
 
 string splitter = "\n-------------------------------------\n";
 
-bool Board::isVisible(int x, int y, vector<Ship*>& fleet) const
+bool Board::isVisible(int x, int y, const vector<Ship*>& fleet) const
 {
     for (const Ship* ship : fleet)
     {
@@ -34,7 +34,7 @@ void Board::placeFleet(const vector<Ship*>& fleet)
     }
 }
 
-void Board::display(vector<Ship*>& playerFleet)
+void Board::display(const vector<Ship*>& playerFleet)
 {
     //wyswietlanie planszy
     for(int y=0; y<mapSize; y++)

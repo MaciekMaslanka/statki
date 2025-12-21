@@ -11,10 +11,10 @@ class Board
         int mapSize;
         std::vector<std::vector<Ship*>> grid;
 
-        bool isVisible(int x, int y, std::vector<Ship*>& fleet) const;
+        bool isVisible(int x, int y, const std::vector<Ship*>& fleet) const;
 
     public:
         Board(int size);
         void placeFleet(const std::vector<Ship*>& fleet);
-        void display(std::vector<Ship*>& playerFleet);
+        void display(const std::vector<Ship*>& playerFleet);
 };

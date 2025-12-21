@@ -18,8 +18,8 @@ class Game
         Player* player2 = nullptr;
 
         void switchTurns();
-        void placeShips(int shipsAmount[4], Player* player1, Player* player2, int mapSize);
-        bool isOccupied(std::array<int, 2> pos, std::vector<std::array<int, 2>>& occupiedPositions);
+        void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);
+        bool isOccupied(std::array<int, 2> pos, const std::vector<std::array<int, 2>>& occupiedPositions);
         
     public:
         Game();
