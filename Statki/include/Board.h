@@ -10,6 +10,7 @@ class Board
     private:
         int mapSize;
         std::vector<std::vector<Ship*>> grid;
+        bool isInCursorMode = false;
 
         bool isVisible(int x, int y, const std::vector<Ship*>& fleet) const;
 
@@ -17,4 +18,9 @@ class Board
         Board(int size);
         void placeFleet(const std::vector<Ship*>& fleet);
         void display(const std::vector<Ship*>& playerFleet);
+
+        bool getIsInCursorMode() const;
+        void setIsInCursorMode(bool mode);
+
+        ~Board() = default;
 };

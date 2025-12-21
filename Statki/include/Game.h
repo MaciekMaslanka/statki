@@ -9,6 +9,7 @@
 #include "../include/AircraftCarrier.h"
 #include "../include/Destroyer.h"
 #include "../include/Cruiser.h"
+#include "../include/platform.h"
 
 class Game
 {
@@ -16,10 +17,12 @@ class Game
         Board* board = nullptr;
         Player* player1 = nullptr;
         Player* player2 = nullptr;
+        Player* currentPlayer = nullptr;
 
         void switchTurns();
         void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);
         bool isOccupied(std::array<int, 2> pos, const std::vector<std::array<int, 2>>& occupiedPositions);
+        void displayStats(const Player* player);
         
     public:
         Game();

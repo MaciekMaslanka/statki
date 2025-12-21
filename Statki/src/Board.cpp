@@ -1,7 +1,6 @@
 #include "../include/Board.h"
 using namespace std;
 
-string splitter = "\n-------------------------------------\n";
 
 bool Board::isVisible(int x, int y, const vector<Ship*>& fleet) const
 {
@@ -106,6 +105,7 @@ void Board::display(const vector<Ship*>& playerFleet)
         }
         cout<<"\n";
     }
-    cout<<splitter;
-    //wyswietlanie statystyk TO DO
 }
+
+bool Board::getIsInCursorMode() const {return isInCursorMode;}
+void Board::setIsInCursorMode(bool mode) {isInCursorMode = mode;}

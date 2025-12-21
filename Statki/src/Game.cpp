@@ -3,10 +3,11 @@
 
 using namespace std;
 
+string SPLITTER = "\n-------------------------------------\n";
+
 void Game::switchTurns()
 {
-    player1->setIsHisTurn(!player1->getIsHisTurn());
-    player2->setIsHisTurn(!player2->getIsHisTurn());
+    currentPlayer==player1 ? player2 : player1;
 }
 
 void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSize, int xMax, int xMin)
@@ -43,6 +44,20 @@ bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPo
         }
     }
     return false;
+}
+void Game::displayStats(const Player* player)
+{
+    if (board->getIsInCursorMode())
+    {
+        cout<<"Statystyki okrętu pod kursorem: \n";
+        //TO DO
+    }
+    else
+    {
+        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki okrętów.\n";
+    }
+    cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
+
 }
         
 Game::Game() {}
@@ -107,11 +122,24 @@ void Game::beginGame()
     board->placeFleet(player1->getFleet());
     board->placeFleet(player2->getFleet());
     
-    player1->setIsHisTurn(true);
+    if (rand() % 2 == 0)
+    {
+        currentPlayer = player1;
+    }
+    else
+    {
+        currentPlayer = player2;
+    }
     gameLoop();
 }
 void Game::gameLoop()
 {
-    board->display(player1->getFleet());
-    board->display(player2->getFleet());
+    clearScreen();
+    cout<<"Tura gracza "<<currentPlayer->getName()<<endl;
+    cout<<SPLITTER;
+    board->display(currentPlayer->getFleet());
+    cout<<SPLITTER;
+    displayStats(currentPlayer);
+    cout<<SPLITTER;
+
 }
