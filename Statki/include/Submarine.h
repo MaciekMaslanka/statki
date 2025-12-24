@@ -10,7 +10,7 @@ class Submarine : public Ship
         int initialTorpedoesAmount;
 
     public:
-    Submarine(std::array<int, 2> position, shipSize size, int fuelAmount, int detectionRange, float health, bool isAlive=true, int torpedoesAmount=0);
+    Submarine(std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive=true, int torpedoesAmount=0);
 
     bool canTorpedoAttack() const override;
     bool isStealth() const override;

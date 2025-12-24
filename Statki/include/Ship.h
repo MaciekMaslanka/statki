@@ -10,6 +10,7 @@ class Ship
     protected:
         std::array<int, 2> position;
         shipSize size;
+        shipType type;
         int fuelAmount;
         int initialFuelAmount;
         int detectionRange;
@@ -20,7 +21,7 @@ class Ship
         int calculateDistance(std::array<int, 2> from, std::array<int, 2> to);
 
     public:
-        Ship(std::array<int, 2> position, shipSize size, int fuelAmount, int detectionRange, float health, bool isAlive = true);
+        Ship(std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true);
 
         virtual bool shootAttack(Ship& target);
         virtual bool torpedoAttack(Ship& target);
@@ -41,7 +42,8 @@ class Ship
 
         //gettery
         std::array<int, 2> getPosition() const;
-        char getSize() const;
+        shipSize getSize() const;
+        shipType getType() const;
         int getFuelAmount() const;
         float getHealth() const;
         bool getIsAlive() const;

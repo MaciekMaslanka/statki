@@ -7,7 +7,14 @@ string SPLITTER = "\n-------------------------------------\n";
 
 void Game::switchTurns()
 {
-    currentPlayer==player1 ? player2 : player1;
+    if (currentPlayer == player1)
+    {
+        currentPlayer = player2;
+    }
+    else
+    {
+        currentPlayer = player1;
+    }
 }
 
 void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSize, int xMax, int xMin)
@@ -47,17 +54,6 @@ bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPo
 }
 void Game::displayStats(const Player* player)
 {
-    if (board->getIsInCursorMode())
-    {
-        cout<<"Statystyki okrętu pod kursorem: \n";
-        //TO DO
-    }
-    else
-    {
-        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki okrętów.\n";
-    }
-    cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
-
 }
         
 Game::Game() {}
@@ -67,13 +63,13 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
     switch (type)
     {
         case submarine:
-            return new Submarine(position, small, 50, 5, 100, true, 10);
+            return new Submarine(position, small, submarine, 50, 5, 100, true, 10);
         case aCarrier:
-            return new AircraftCarrier(position, large, 50, 7, 100);
+            return new AircraftCarrier(position, large, aCarrier, 50, 7, 100);
         case destroyer:
-            return new Destroyer(position, medium, 50, 6, 100);
+            return new Destroyer(position, medium, destroyer, 50, 6, 100);
         case cruiser:
-            return new Cruiser(position, large, 50, 6, 100);
+            return new Cruiser(position, large, cruiser, 50, 6, 100);
         default:
             return nullptr;
     }
@@ -82,6 +78,7 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
 //rozgrywka
 void Game::beginGame()
 {
+    srand(time(NULL));
     string name1, name2;
     int shipsAmount[4] = {0, 0, 0, 0}; //podwodne, lotniskowce, niszczyciele, krążowniki
     int mapSize;
@@ -97,6 +94,10 @@ void Game::beginGame()
     {
         cout<<"Podaj rozmiar mapy (min 20, max 50): ";
         cin>>mapSize;
+        if (mapSize < 20 || mapSize > 50)
+        {
+            cout<<"Nieprawidłowy rozmiar mapy. Spróbuj ponownie.\n";
+        }
     } while (mapSize < 20 || mapSize > 50);
     board = new Board(mapSize);
 
@@ -117,11 +118,8 @@ void Game::beginGame()
     //gracz 1 zaczyna po lewej a 2 po prawej
     placePlayerShips(shipsAmount, player1, mapSize, 10, 0);
     placePlayerShips(shipsAmount, player2, mapSize, mapSize, mapSize-10);
-
-    //ustawienie na planszy
-    board->placeFleet(player1->getFleet());
-    board->placeFleet(player2->getFleet());
     
+    //losowy gracz zaczyna
     if (rand() % 2 == 0)
     {
         currentPlayer = player1;
@@ -132,14 +130,95 @@ void Game::beginGame()
     }
     gameLoop();
 }
-void Game::gameLoop()
+void Game::displayGame()
 {
     clearScreen();
     cout<<"Tura gracza "<<currentPlayer->getName()<<endl;
     cout<<SPLITTER;
+    //mapa
     board->display(currentPlayer->getFleet());
     cout<<SPLITTER;
-    displayStats(currentPlayer);
+    //statystyki
+    if (board->getIsInCursorMode())
+    {
+        cout<<"Statystyki okrętu pod kursorem: \n";
+        Ship* ship = board->getShipUnderCursor();
+        if (ship != nullptr)
+        {
+            cout<<"Typ: ";
+            switch (ship->getType())
+            {
+                case submarine:
+                    cout<<"Okręt podwodny\n";
+                    break;
+                case aCarrier:
+                    cout<<"Lotniskowiec\n";
+                    break;
+                case destroyer:
+                    cout<<"Niszczyciel\n";
+                    break;
+                case cruiser:
+                    cout<<"Krążownik\n";
+                    break;
+                default:
+                    cout<<"Coś się sypło\n";
+                    break;
+            }
+            cout<<"Pozycja: ("<<ship->getPosition()[0]<<", "<<ship->getPosition()[1]<<")\n";
+            cout<<"Paliwo: "<<ship->getFuelAmount()<<"\n";
+            cout<<"Zdrowie: "<<ship->getHealth()<<"\n";
+            cout<<"Czy żywy: "<<(ship->getIsAlive() ? "Tak" : "Nie")<<"\n";
+        }
+        else
+        {
+            cout<<"Brak okrętu pod kursorem.\n";
+        }
+        cout<<"Wciśnij 'c', aby wyjść z trybu kursora.\n";
+    }
+    else
+    {
+        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki okrętów.\n";
+    }
+    cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
     cout<<SPLITTER;
+    //reszta wiadomosci
+}
+void Game::gameLoop()
+{
+    while (true)
+    {
+        clearScreen();
+        displayGame();
+        char key = getKey();
 
+        if (key == 'c')
+        {
+            board->toogleCursorMode();
+            continue;
+        }
+
+        if (board->getIsInCursorMode())
+        {
+            array<int, 2> offset = {0, 0};
+            switch (key)
+            {
+                case 'w':
+                    offset = {0, -1};
+                    break;
+                case 's':
+                    offset = {0, 1};
+                    break;
+                case 'a':
+                    offset = {-1, 0};
+                    break;
+                case 'd':
+                    offset = {1, 0};
+                    break;
+                default:
+                    break;
+            }
+            board->moveCursor(offset);
+            continue;
+        }
+    }
 }

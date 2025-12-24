@@ -33,6 +33,16 @@ void Board::placeFleet(const vector<Ship*>& fleet)
     }
 }
 
+void Board::drawTile(string symbol, const string& color, bool isCursorHere) const
+{
+    if (isCursorHere)
+    {
+        cout<<CURSOR;
+    }
+        
+    cout<<color<<symbol<<RESET<<" ";
+}
+
 void Board::display(const vector<Ship*>& playerFleet)
 {
     //wyswietlanie planszy
@@ -41,71 +51,84 @@ void Board::display(const vector<Ship*>& playerFleet)
         for(int x=0; x<mapSize; x++)
         {
             Ship* tile = grid[y][x];
-            if(tile != nullptr) //jezeli jest jakis statek
+            string symbol = "~";
+            string color = DARK_BLUE_WATER;
+            bool visible  = isVisible(x, y, playerFleet);
+            bool isCursorHere = (cursorPosition[0] == x && cursorPosition[1] == y && isInCursorMode);
+
+            if(tile == nullptr) //jezeli jest jakis statek
+            {
+                if (visible)
+                {
+                    color = LIGHT_BLUE_WATER;
+                }
+            }
+            else
             {
                 bool isPlayerShip = false;
-                for(const Ship* ship : playerFleet)
+                for (const Ship* playerShip : playerFleet)
                 {
-                    if(ship == tile)
+                    if (tile == playerShip)
                     {
                         isPlayerShip = true;
                         break;
                     }
                 }
-
-                if(isPlayerShip)
+            
+                if (!tile->getIsAlive())
                 {
+                    symbol = DESTROYED;
+                }
+                else if (isPlayerShip)
+                {
+                    symbol = tile->getSymbol();
                     if (tile->isStealth())
                     {
-                        cout<<UNDERWATER_PLAYER_SHIP<<tile->getSymbol()<<RESET<<" ";
-                    }
-                    else if (tile->getIsAlive() == false)
-                    {
-                        cout<<DESTROYED;
+                        color = UNDERWATER_PLAYER_SHIP;
                     }
                     else
                     {
-                        cout<<PLAYER_SHIP<<tile->getSymbol()<<RESET<<" ";
+                        color = PLAYER_SHIP;
                     }
                 }
-                else //jezeli jest wroga
+                else if (visible && !tile->isStealth())
                 {
-                    if (isVisible(x, y, playerFleet) && !tile->isStealth())
-                    {
-                        if (tile->getIsAlive())
-                        {
-                            cout<<ENEMY_SHIP<<tile->getSymbol()<<RESET<<" ";
-                        }
-                        else
-                        {
-                            cout<<DESTROYED;
-                        }
-                    }
-                    else if (tile->isStealth())
-                    {
-                        cout<<LIGHT_BLUE_WATER<<" ";
-                    }
-                    else
-                    {
-                        cout<<DARK_BLUE_WATER<<" ";
-                    }
-                }
-            }
-            else //jezeli nie ma statku
-            {
-                if (isVisible(x, y, playerFleet))
-                {
-                    cout<<LIGHT_BLUE_WATER<<" ";
+                    symbol = tile->getSymbol();
+                    color = ENEMY_SHIP;
                 }
                 else
                 {
-                    cout<<DARK_BLUE_WATER<<" ";
+                    symbol = "~";
+                    color = DARK_BLUE_WATER;
                 }
             }
+
+            drawTile(symbol, color, isCursorHere);
+
         }
         cout<<"\n";
     }
 }
 
 bool Board::getIsInCursorMode() const {return isInCursorMode;}
-void Board::setIsInCursorMode(bool mode) {isInCursorMode = mode;}
+void Board::toogleCursorMode() {isInCursorMode = !isInCursorMode;}
+array<int, 2> Board::getCursorPosition() const {return cursorPosition;}
+Ship* Board::getShipUnderCursor() const
+{
+    return grid[cursorPosition[1]][cursorPosition[0]];
+}
+
+void Board::moveCursor(array<int, 2> offset)
+{
+    int newX = cursorPosition[0] + offset[0];
+    int newY = cursorPosition[1] + offset[1];
+
+    if (newX >= 0 && newX < mapSize)
+    {
+        cursorPosition[0] = newX;
+    }
+    if (newY >= 0 && newY < mapSize)
+    {
+        cursorPosition[1] = newY;
+    }
+}
