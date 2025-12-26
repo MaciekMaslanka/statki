@@ -45,7 +45,9 @@ class Ship
         shipSize getSize() const;
         shipType getType() const;
         int getFuelAmount() const;
+        int getInitialFuelAmount() const;
         float getHealth() const;
+        float getInitialHealth() const;
         bool getIsAlive() const;
         int getDetectionRange() const;
         virtual char getSymbol() const;

@@ -161,13 +161,13 @@ void Game::displayGame()
                     cout<<"Krążownik\n";
                     break;
                 default:
-                    cout<<"Coś się sypło\n";
+                    cout<<"????\n";
                     break;
             }
-            cout<<"Pozycja: ("<<ship->getPosition()[0]<<", "<<ship->getPosition()[1]<<")\n";
-            cout<<"Paliwo: "<<ship->getFuelAmount()<<"\n";
-            cout<<"Zdrowie: "<<ship->getHealth()<<"\n";
-            cout<<"Czy żywy: "<<(ship->getIsAlive() ? "Tak" : "Nie")<<"\n";
+            float fuelPercent = (ship->getFuelAmount() * 100) / ship->getInitialFuelAmount();
+            cout<<"Paliwo: "<<fuelPercent<<"% ("<<ship->getFuelAmount()<<"/"<<ship->getInitialFuelAmount()<<")\n";
+            float healthPercent = (ship->getHealth() * 100) / ship->getInitialHealth();
+            cout<<"Zdrowie: "<<healthPercent<<"% ("<<ship->getHealth()<<"/"<<ship->getInitialHealth()<<")\n";
         }
         else
         {

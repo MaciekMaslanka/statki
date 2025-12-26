@@ -59,7 +59,9 @@ std::array<int, 2> Ship::getPosition() const {return position;}
 shipSize Ship::getSize() const {return size;}
 shipType Ship::getType() const {return type;}
 int Ship::getFuelAmount() const {return fuelAmount;}
+int Ship::getInitialFuelAmount() const {return initialFuelAmount;}
 float Ship::getHealth() const {return health;}
+float Ship::getInitialHealth() const {return initialHealth;}
 bool Ship::getIsAlive() const {return isAlive;}
 int Ship::getDetectionRange() const {return detectionRange;}
 char Ship::getSymbol() const {return '?';}
