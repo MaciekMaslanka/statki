@@ -3,8 +3,13 @@
 
 using namespace std;
 
-string SPLITTER = "\n-------------------------------------\n";
+const string SPLITTER = "\n-------------------------------------\n";
 
+const char cursorModeKey = 'c';
+const char moveKey = 'm';
+const char shootAttackKey = 'o';
+const char torpedoAttackKey = 't';
+const char airStrikeKey = 'a';
 void Game::switchTurns()
 {
     if (currentPlayer == player1)
@@ -135,14 +140,17 @@ void Game::displayGame()
     clearScreen();
     cout<<"Tura gracza "<<currentPlayer->getName()<<endl;
     cout<<SPLITTER;
+
     //mapa
     board->display(currentPlayer->getFleet());
     cout<<SPLITTER;
+    
     //statystyki
-    if (board->getIsInCursorMode())
+    bool isInCursorMode = board->getIsInCursorMode();
+    Ship* ship = board->getShipUnderCursor();
+    if (isInCursorMode)
     {
         cout<<"Statystyki okrętu pod kursorem: \n";
-        Ship* ship = board->getShipUnderCursor();
         if (ship != nullptr)
         {
             cout<<"Typ: ";
@@ -165,9 +173,10 @@ void Game::displayGame()
                     break;
             }
             float fuelPercent = (ship->getFuelAmount() * 100) / ship->getInitialFuelAmount();
-            cout<<"Paliwo: "<<fuelPercent<<"% ("<<ship->getFuelAmount()<<"/"<<ship->getInitialFuelAmount()<<")\n";
             float healthPercent = (ship->getHealth() * 100) / ship->getInitialHealth();
+            cout<<"Paliwo: "<<fuelPercent<<"% ("<<ship->getFuelAmount()<<"/"<<ship->getInitialFuelAmount()<<")\n";
             cout<<"Zdrowie: "<<healthPercent<<"% ("<<ship->getHealth()<<"/"<<ship->getInitialHealth()<<")\n";
+            cout<<"Status: "<<(ship->getIsAlive() ? "Aktywny\n" : "Zatopiony\n");
         }
         else
         {
@@ -177,11 +186,40 @@ void Game::displayGame()
     }
     else
     {
-        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki okrętów.\n";
+        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki i opcje okrętów.\n";
     }
     cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
     cout<<SPLITTER;
     //reszta wiadomosci
+    if (isInCursorMode)
+    {
+        if (ship != nullptr && ship->getIsAlive())
+        {
+            
+            cout<<moveKey+"- przesuń okręt\n";
+            if (ship->canShoot())
+            {
+                cout<<shootAttackKey+"- atak ostrzałem\n";
+            }
+            if (ship->canTorpedoAttack())
+            {
+                cout<<torpedoAttackKey+"- atak torpedami\n";
+            }
+            if (ship->canAirStrike())
+            {
+                cout<<airStrikeKey+"- atak lotniczy\n";
+            }
+        }
+        else if (ship != nullptr && !ship->getIsAlive())
+        {
+            cout<<"Ten okręt jest zatopiony. Brak dostępnych opcji.\n";
+        }
+        else
+        {
+            cout<<"Brak okrętu pod kursorem. Brak dostępnych opcji.\n";
+        }
+
+    }
 }
 void Game::gameLoop()
 {
@@ -191,7 +229,7 @@ void Game::gameLoop()
         displayGame();
         char key = getKey();
 
-        if (key == 'c')
+        if (key == cursorModeKey)
         {
             board->toogleCursorMode();
             continue;
