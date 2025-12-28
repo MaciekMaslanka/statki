@@ -14,6 +14,8 @@ const char cancelKey = 'q';
 
 const int movePointsPerTurn = 5;
 
+vector<string> additionalMessages = {0};
+
 void Game::switchTurns()
 {
     if (currentPlayer == player1)
@@ -206,6 +208,7 @@ void Game::displayGame()
     cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
     cout<<SPLITTER;
     //reszta wiadomosci
+    //TO DO przerobić, żeby używało zmiennej additionalMessages zamiast tego czegoś ↓↓
     if (isInCursorMode)
     {
         if (ship != nullptr && ship->getIsAlive())
@@ -243,6 +246,8 @@ void Game::gameLoop()
         displayGame();
         char key = getKey();
 
+        bool canMoveToTile;
+
         //wlaczenie kursora
         if (key == cursorModeKey && !board->getIsInCursorMode())
         {
@@ -259,11 +264,29 @@ void Game::gameLoop()
         //wlaczenie ruchu
         if (key == moveKey && board->getIsInCursorMode())
         {
-            Ship* ship = board->getShipUnderCursor();
-            if (ship != nullptr && isCurrentPlayerShip(ship) && ship->getIsAlive())
+            selectedShip = board->getShipUnderCursor();
+            if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive())
             {
-                board->toogleMoveMode(ship);
+                board->toogleMoveMode(selectedShip);
                 continue;
+            }
+        }
+        //potwierdzenie ruchu
+        if (key == moveKey && board->getIsInMoveMode())
+        {
+            Ship* tile = board->getShipUnderCursor();
+            if (tile == nullptr)
+            {
+                int distanceTravelled = selectedShip->move(board->getCursorPosition());
+                if (distanceTravelled == -1) //jeżeli nie ma na tyle paliwa
+                {
+                    additionalMessages
+                    //TU SKOŃCZYŁEM
+                }
+                else
+                {
+
+                }
             }
         }
         //wylaczenie ruchu

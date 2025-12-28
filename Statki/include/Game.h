@@ -18,6 +18,7 @@ class Game
         Player* player1 = nullptr;
         Player* player2 = nullptr;
         Player* currentPlayer = nullptr;
+        Ship* selectedShip = nullptr;
 
         void switchTurns();
         void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);

@@ -26,19 +26,19 @@ bool Ship::canAirStrike() const {return false;}
 bool Ship::isStealth() const {return false;}
 bool Ship::toogleDive() {return false;}
 
-void Ship::move(array<int, 2> targetPosition)
+int Ship::move(array<int, 2> targetPosition)
 {
     int distance = calculateDistance(position, targetPosition);
-    if (distance <= fuelAmount)
+    if (distance <= detectionRange && distance <= fuelAmount)
     {
         position = targetPosition;
         fuelAmount -= distance;
+        return distance;
     }
     else
     {
-        cout<<"Cel jest za daleko"<<endl;
+        return -1;
     }
-    //TO DO: przerobić to żeby nie było couta
 }
 
 void Ship::takeDamage(float amount)
