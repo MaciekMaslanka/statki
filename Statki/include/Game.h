@@ -22,7 +22,7 @@ class Game
         void switchTurns();
         void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);
         bool isOccupied(std::array<int, 2> pos, const std::vector<std::array<int, 2>>& occupiedPositions);
-        void displayStats(const Player* player);
+        bool isCurrentPlayerShip(Ship* ship) const;
         void displayGame();
         
     public:

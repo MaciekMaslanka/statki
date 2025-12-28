@@ -16,3 +16,5 @@ const std::string SELECTED_PLAYER_SHIP = "\033[96m";
 
 const std::string DESTROYED = "🔥";
 const std::string CURSOR = "\033[7m";
+
+const std::string YELLOW = "\033[33m";

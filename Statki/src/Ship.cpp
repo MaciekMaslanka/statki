@@ -38,6 +38,7 @@ void Ship::move(array<int, 2> targetPosition)
     {
         cout<<"Cel jest za daleko"<<endl;
     }
+    //TO DO: przerobić to żeby nie było couta
 }
 
 void Ship::takeDamage(float amount)

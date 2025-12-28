@@ -10,6 +10,10 @@ const char moveKey = 'm';
 const char shootAttackKey = 'o';
 const char torpedoAttackKey = 't';
 const char airStrikeKey = 'a';
+const char cancelKey = 'q';
+
+const int movePointsPerTurn = 5;
+
 void Game::switchTurns()
 {
     if (currentPlayer == player1)
@@ -20,6 +24,7 @@ void Game::switchTurns()
     {
         currentPlayer = player1;
     }
+    currentPlayer->setMovePoints(movePointsPerTurn);
 }
 
 void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSize, int xMax, int xMin)
@@ -46,6 +51,19 @@ void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSiz
     board->placeFleet(player->getFleet());
 }
 
+bool Game::isCurrentPlayerShip(Ship* ship) const
+{
+    const vector<Ship*>& fleet = currentPlayer->getFleet();
+    for (Ship* playerShip : fleet)
+    {
+        if (playerShip == ship)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPositions)
 {
     for (array<int, 2> occupiedPos : occupiedPositions)
@@ -56,9 +74,6 @@ bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPo
         }
     }
     return false;
-}
-void Game::displayStats(const Player* player)
-{
 }
         
 Game::Game() {}
@@ -195,19 +210,18 @@ void Game::displayGame()
     {
         if (ship != nullptr && ship->getIsAlive())
         {
-            
-            cout<<moveKey+"- przesuń okręt\n";
+            cout<<moveKey<<"- przesuń okręt\n";
             if (ship->canShoot())
             {
-                cout<<shootAttackKey+"- atak ostrzałem\n";
+                cout<<shootAttackKey<<"- atak ostrzałem\n";
             }
             if (ship->canTorpedoAttack())
             {
-                cout<<torpedoAttackKey+"- atak torpedami\n";
+                cout<<torpedoAttackKey<<"- atak torpedami\n";
             }
             if (ship->canAirStrike())
             {
-                cout<<airStrikeKey+"- atak lotniczy\n";
+                cout<<airStrikeKey<<"- atak lotniczy\n";
             }
         }
         else if (ship != nullptr && !ship->getIsAlive())
@@ -229,12 +243,37 @@ void Game::gameLoop()
         displayGame();
         char key = getKey();
 
-        if (key == cursorModeKey)
+        //wlaczenie kursora
+        if (key == cursorModeKey && !board->getIsInCursorMode())
+        {
+            board->toogleCursorMode();
+            continue;
+        }
+        //wylaczenie kursora
+        if (key == cancelKey && board->getIsInCursorMode() && !board->getIsInMoveMode())
         {
             board->toogleCursorMode();
             continue;
         }
 
+        //wlaczenie ruchu
+        if (key == moveKey && board->getIsInCursorMode())
+        {
+            Ship* ship = board->getShipUnderCursor();
+            if (ship != nullptr && isCurrentPlayerShip(ship) && ship->getIsAlive())
+            {
+                board->toogleMoveMode(ship);
+                continue;
+            }
+        }
+        //wylaczenie ruchu
+        if (key == cancelKey && board->getIsInMoveMode())
+        {
+            board->toogleMoveMode(nullptr);
+            continue;
+        }
+
+        //ruch kursorem
         if (board->getIsInCursorMode())
         {
             array<int, 2> offset = {0, 0};

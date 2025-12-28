@@ -17,6 +17,22 @@ bool Board::isVisible(int x, int y, const vector<Ship*>& fleet) const
     }
     return false;
 }
+bool Board::isVisible(int x, int y, const Ship* ship) const
+{
+    if (!ship->getIsAlive()) { return false; }
+
+    array<int, 2> shipPos = ship->getPosition();
+    int dist = abs(shipPos[0] - x) + abs(shipPos[1] - y);
+    if (dist <= ship->getDetectionRange())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
 
 Board::Board(int size)
 {
@@ -56,11 +72,23 @@ void Board::display(const vector<Ship*>& playerFleet)
             bool visible  = isVisible(x, y, playerFleet);
             bool isCursorHere = (cursorPosition[0] == x && cursorPosition[1] == y && isInCursorMode);
 
-            if(tile == nullptr) //jezeli jest jakis statek
+            if(tile == nullptr)
             {
-                if (visible)
+                if (visible && !isInMoveMode)
                 {
                     color = LIGHT_BLUE_WATER;
+                }
+                else if (isInMoveMode)
+                {
+                    //sprawdzanie czy moze sie tam przesunac
+                    if (isVisible(x, y, selectedShip))
+                    {
+                        color = YELLOW;
+                    }
+                    else
+                    {
+                        color = DARK_BLUE_WATER;
+                    }
                 }
             }
             else
@@ -117,7 +145,6 @@ Ship* Board::getShipUnderCursor() const
 {
     return grid[cursorPosition[1]][cursorPosition[0]];
 }
-
 void Board::moveCursor(array<int, 2> offset)
 {
     int newX = cursorPosition[0] + offset[0];
@@ -132,3 +159,18 @@ void Board::moveCursor(array<int, 2> offset)
         cursorPosition[1] = newY;
     }
 }
+
+void Board::toogleMoveMode(Ship* ship)
+{
+    if (ship == nullptr)
+    {
+        isInMoveMode = false;
+        selectedShip = nullptr;
+    }
+    else
+    {
+        isInMoveMode = !isInMoveMode;
+        selectedShip = ship;
+    }
+}
+bool Board::getIsInMoveMode() const {return isInMoveMode;}
