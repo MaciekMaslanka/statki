@@ -48,6 +48,13 @@ void Board::placeFleet(const vector<Ship*>& fleet)
         grid[pos[1]][pos[0]] = ship;
     }
 }
+void Board::updateShipPosition(Ship* ship, array<int, 2> newPosition)
+{
+    array<int, 2> oldPosition = ship->getPosition();
+    grid[oldPosition[1]][oldPosition[0]] = nullptr;
+    grid[newPosition[1]][newPosition[0]] = ship;
+    ship->move(newPosition);
+}
 
 void Board::drawTile(string symbol, const string& color, bool isCursorHere) const
 {

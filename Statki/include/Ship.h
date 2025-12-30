@@ -34,7 +34,8 @@ class Ship
         virtual bool isStealth() const;
         virtual bool toogleDive();
 
-        int move(std::array<int, 2> targetPosition);
+        void move(std::array<int, 2> targetPosition);
+        int calculateMoveCost(std::array<int, 2> targetPosition);
 
         virtual void takeDamage(float amount);
 

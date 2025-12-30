@@ -14,8 +14,6 @@ const char cancelKey = 'q';
 
 const int movePointsPerTurn = 5;
 
-vector<string> additionalMessages = {0};
-
 void Game::switchTurns()
 {
     if (currentPlayer == player1)
@@ -164,11 +162,12 @@ void Game::displayGame()
     
     //statystyki
     bool isInCursorMode = board->getIsInCursorMode();
+    bool isInMoveMode = board->getIsInMoveMode();
     Ship* ship = board->getShipUnderCursor();
-    if (isInCursorMode)
+    if (isInCursorMode && !isInMoveMode)
     {
         cout<<"Statystyki okrętu pod kursorem: \n";
-        if (ship != nullptr)
+        if (ship != nullptr && isCurrentPlayerShip(ship))
         {
             cout<<"Typ: ";
             switch (ship->getType())
@@ -199,44 +198,78 @@ void Game::displayGame()
         {
             cout<<"Brak okrętu pod kursorem.\n";
         }
-        cout<<"Wciśnij 'c', aby wyjść z trybu kursora.\n";
+        cout<<"Wciśnij"<<cancelKey<<", aby wyjść z trybu kursora.\n";
+    }
+    else if (isInMoveMode)
+    {
+        cout<<"Wskaż docelową pozycję.\n";
+        if (!selectedShip) return;
+
+        int moveCost = selectedShip->calculateMoveCost(board->getCursorPosition());
+        Ship* underCursor = board->getShipUnderCursor();
+        if (moveCost != -1 && underCursor == nullptr)
+        {
+            cout<<"Statek zużyje "<<moveCost<<" jednostek paliwa aby tu dopłynąć.\n";
+        }
+        else if (moveCost == -1)
+        {
+            cout<<"Ta pozycja jest za daleko!\n";
+        }
+        else
+        {
+            cout<<"Ta pozycja jest zajęta przez inny statek!\n";
+        }
     }
     else
     {
         cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki i opcje okrętów.\n";
     }
+
     cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
     cout<<SPLITTER;
-    //reszta wiadomosci
-    //TO DO przerobić, żeby używało zmiennej additionalMessages zamiast tego czegoś ↓↓
-    if (isInCursorMode)
-    {
-        if (ship != nullptr && ship->getIsAlive())
-        {
-            cout<<moveKey<<"- przesuń okręt\n";
-            if (ship->canShoot())
-            {
-                cout<<shootAttackKey<<"- atak ostrzałem\n";
-            }
-            if (ship->canTorpedoAttack())
-            {
-                cout<<torpedoAttackKey<<"- atak torpedami\n";
-            }
-            if (ship->canAirStrike())
-            {
-                cout<<airStrikeKey<<"- atak lotniczy\n";
-            }
-        }
-        else if (ship != nullptr && !ship->getIsAlive())
-        {
-            cout<<"Ten okręt jest zatopiony. Brak dostępnych opcji.\n";
-        }
-        else
-        {
-            cout<<"Brak okrętu pod kursorem. Brak dostępnych opcji.\n";
-        }
 
+    //reszta wiadomosci
+    if (currentPlayer->getMovePoints() > 0)
+    {
+        if (isInCursorMode && !isInMoveMode)
+        {
+            if (ship != nullptr && ship->getIsAlive())
+            {
+                cout<<moveKey<<"- przesuń okręt\n";
+                if (ship->canShoot())
+                {
+                    cout<<shootAttackKey<<"- atak ostrzałem\n";
+                }
+                if (ship->canTorpedoAttack())
+                {
+                    cout<<torpedoAttackKey<<"- atak torpedami\n";
+                }
+                if (ship->canAirStrike())
+                {
+                    cout<<airStrikeKey<<"- atak lotniczy\n";
+                }
+            }
+            else if (ship != nullptr && !ship->getIsAlive())
+            {
+                cout<<"Ten okręt jest zatopiony. Brak dostępnych opcji.\n";
+            }
+            else
+            {
+                cout<<"Brak okrętu pod kursorem.\n";
+            }
+            cout<<cancelKey<<"- wyjdź z trybu kursora\n";        
+        }
+        else if (isInMoveMode)
+        {
+            cout<<moveKey<<"- potwierdź ruch\n";
+            cout<<cancelKey<<"- anuluj\n";
+        }
     }
+    else
+    {
+        cout<<"Nie posiadasz punktów ruchu!\n";
+    }
+
 }
 void Game::gameLoop()
 {
@@ -254,46 +287,53 @@ void Game::gameLoop()
             board->toogleCursorMode();
             continue;
         }
-        //wylaczenie kursora
-        if (key == cancelKey && board->getIsInCursorMode() && !board->getIsInMoveMode())
-        {
-            board->toogleCursorMode();
-            continue;
-        }
 
-        //wlaczenie ruchu
-        if (key == moveKey && board->getIsInCursorMode())
+        if (key == moveKey)
         {
-            selectedShip = board->getShipUnderCursor();
-            if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive())
+            //potwierdzenie ruchu
+            if (board->getIsInMoveMode())
             {
-                board->toogleMoveMode(selectedShip);
+                Ship* tile = board->getShipUnderCursor();
+                if (tile == nullptr)
+                {
+                    array<int, 2> targetPos = board->getCursorPosition();
+                    int moveCost = selectedShip->calculateMoveCost(targetPos);
+                    if (moveCost != -1 && currentPlayer->getMovePoints() > 0)
+                    {
+                        board->updateShipPosition(selectedShip, targetPos);
+                        board->toogleMoveMode(nullptr);
+                        currentPlayer->setMovePoints(currentPlayer->getMovePoints() - 1);
+                        continue;
+                    }
+                }
+            }
+
+            //wlaczenie trybu ruchu
+            if (board->getIsInCursorMode() && currentPlayer->getMovePoints() > 0)
+            {
+                Ship* ship = board->getShipUnderCursor();
+                if (ship != nullptr && isCurrentPlayerShip(ship) && ship->getIsAlive())
+                {
+                    selectedShip = ship;
+                    board->toogleMoveMode(selectedShip);
+                }
                 continue;
             }
         }
-        //potwierdzenie ruchu
-        if (key == moveKey && board->getIsInMoveMode())
-        {
-            Ship* tile = board->getShipUnderCursor();
-            if (tile == nullptr)
-            {
-                int distanceTravelled = selectedShip->move(board->getCursorPosition());
-                if (distanceTravelled == -1) //jeżeli nie ma na tyle paliwa
-                {
-                    additionalMessages
-                    //TU SKOŃCZYŁEM
-                }
-                else
-                {
 
-                }
-            }
-        }
-        //wylaczenie ruchu
-        if (key == cancelKey && board->getIsInMoveMode())
+        //wylaczanie trybow
+        if (key == cancelKey)
         {
-            board->toogleMoveMode(nullptr);
-            continue;
+            if (board->getIsInMoveMode())
+            {
+                board->toogleMoveMode(nullptr);
+                continue;
+            }
+            else if (board->getIsInCursorMode())
+            {
+                board->toogleCursorMode();
+                continue;
+            }
         }
 
         //ruch kursorem

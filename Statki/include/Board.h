@@ -25,6 +25,7 @@ class Board
     public:
         Board(int size);
         void placeFleet(const std::vector<Ship*>& fleet);
+        void updateShipPosition(Ship* ship, std::array<int, 2> newPosition);
         void display(const std::vector<Ship*>& playerFleet);
 
         void moveCursor(std::array<int, 2> targetPosition);

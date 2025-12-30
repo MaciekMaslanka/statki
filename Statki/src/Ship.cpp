@@ -26,13 +26,18 @@ bool Ship::canAirStrike() const {return false;}
 bool Ship::isStealth() const {return false;}
 bool Ship::toogleDive() {return false;}
 
-int Ship::move(array<int, 2> targetPosition)
+void Ship::move(array<int, 2> targetPosition)
 {
     int distance = calculateDistance(position, targetPosition);
+    fuelAmount -= distance;
+    position = targetPosition;
+}
+int Ship::calculateMoveCost(array<int, 2> targetPosition)
+{
+    int distance = calculateDistance(position, targetPosition);
+
     if (distance <= detectionRange && distance <= fuelAmount)
     {
-        position = targetPosition;
-        fuelAmount -= distance;
         return distance;
     }
     else
