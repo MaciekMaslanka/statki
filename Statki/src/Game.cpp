@@ -192,13 +192,27 @@ void Game::displayGame()
             float healthPercent = (ship->getHealth() * 100) / ship->getInitialHealth();
             cout<<"Paliwo: "<<fuelPercent<<"% ("<<ship->getFuelAmount()<<"/"<<ship->getInitialFuelAmount()<<")\n";
             cout<<"Zdrowie: "<<healthPercent<<"% ("<<ship->getHealth()<<"/"<<ship->getInitialHealth()<<")\n";
-            cout<<"Status: "<<(ship->getIsAlive() ? "Aktywny\n" : "Zatopiony\n");
+            cout<<"Status: ";
+            if (ship->getIsAlive())
+            {
+                if (ship->canDive())
+                {
+                    if (ship->isStealth()) {cout<<"Aktywny, pod wodą";}
+                    else {cout<<"Aktywny";}
+                }
+                else {cout<<"Aktywny";}
+            }
+            else
+            {
+                cout<<"Zatopiony";
+            }
+            cout<<"\n";
         }
         else
         {
             cout<<"Brak okrętu pod kursorem.\n";
         }
-        cout<<"Wciśnij"<<cancelKey<<", aby wyjść z trybu kursora.\n";
+        cout<<"Wciśnij "<<cancelKey<<", aby wyjść z trybu kursora.\n";
     }
     else if (isInMoveMode)
     {
@@ -222,7 +236,7 @@ void Game::displayGame()
     }
     else
     {
-        cout<<"Wciśnij 'c', aby wejść w tryb kursora i zobaczyć statystyki i opcje okrętów.\n";
+        cout<<"Wciśnij "<<cursorModeKey<<", aby wejść w tryb kursora i zobaczyć statystyki i opcje okrętów.\n";
     }
 
     cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<endl;
@@ -233,7 +247,7 @@ void Game::displayGame()
     {
         if (isInCursorMode && !isInMoveMode)
         {
-            if (ship != nullptr && ship->getIsAlive())
+            if (ship != nullptr && ship->getIsAlive() && isCurrentPlayerShip(ship))
             {
                 cout<<moveKey<<"- przesuń okręt\n";
                 if (ship->canShoot())

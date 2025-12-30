@@ -24,6 +24,7 @@ bool Ship::canTorpedoAttack() const {return false;}
 bool Ship::canAirStrike() const {return false;}
 
 bool Ship::isStealth() const {return false;}
+bool Ship::canDive() const {return false;}
 bool Ship::toogleDive() {return false;}
 
 void Ship::move(array<int, 2> targetPosition)

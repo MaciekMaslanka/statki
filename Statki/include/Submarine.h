@@ -14,6 +14,7 @@ class Submarine : public Ship
 
     bool canTorpedoAttack() const override;
     bool isStealth() const override;
+    bool canDive() const override;
     bool toogleDive() override;
     
     //gettery

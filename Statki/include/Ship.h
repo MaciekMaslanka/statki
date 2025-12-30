@@ -32,6 +32,7 @@ class Ship
         virtual bool canAirStrike() const;
 
         virtual bool isStealth() const;
+        virtual bool canDive() const;
         virtual bool toogleDive();
 
         void move(std::array<int, 2> targetPosition);

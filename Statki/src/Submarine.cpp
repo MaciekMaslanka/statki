@@ -10,7 +10,7 @@
 
     bool Submarine::canTorpedoAttack() const {return true;}
     bool Submarine::isStealth() const {return isUnderwater && isAlive;}
-
+    bool Submarine::canDive() const {return true;}
     bool Submarine::toogleDive()
     {
         if (!isAlive) return false;
