@@ -77,7 +77,7 @@ void Board::display(const vector<Ship*>& playerFleet)
             string symbol = "~";
             string color = DARK_BLUE_WATER;
             bool visible  = isVisible(x, y, playerFleet);
-            bool isCursorHere = (cursorPosition[0] == x && cursorPosition[1] == y && isInCursorMode);
+            bool isCursorHere = (isInCursorMode && cursorPosition[0] == x && cursorPosition[1] == y);
 
             if(tile == nullptr)
             {
@@ -137,9 +137,7 @@ void Board::display(const vector<Ship*>& playerFleet)
                     color = DARK_BLUE_WATER;
                 }
             }
-
             drawTile(symbol, color, isCursorHere);
-
         }
         cout<<"\n";
     }

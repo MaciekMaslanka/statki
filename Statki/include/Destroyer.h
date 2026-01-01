@@ -7,7 +7,7 @@ class Destroyer : public Ship
         int torpedoesAmount;
         int initialTorpedoesAmount;
     public:
-    Destroyer(std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true, int torpedoesAmount=0);
+    Destroyer(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true, int torpedoesAmount=0);
     bool canShoot() const override;
     bool canTorpedoAttack() const override;
 

@@ -2,14 +2,12 @@
 #include <array>
 #include <iostream>
 
-enum shipSize{small, medium, large};
 enum shipType{submarine, aCarrier, destroyer, cruiser};
 
 class Ship
 {
     protected:
         std::array<int, 2> position;
-        shipSize size;
         shipType type;
         int fuelAmount;
         int initialFuelAmount;
@@ -21,7 +19,7 @@ class Ship
         int calculateDistance(std::array<int, 2> from, std::array<int, 2> to);
 
     public:
-        Ship(std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true);
+        Ship(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true);
 
         virtual bool shootAttack(Ship& target);
         virtual bool torpedoAttack(Ship& target);
@@ -44,7 +42,6 @@ class Ship
 
         //gettery
         std::array<int, 2> getPosition() const;
-        shipSize getSize() const;
         shipType getType() const;
         int getFuelAmount() const;
         int getInitialFuelAmount() const;

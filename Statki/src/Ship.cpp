@@ -10,8 +10,8 @@ int Ship::calculateDistance(array<int, 2> from, array<int, 2> to)
     return distance;
 }
 
-Ship::Ship(array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive)
-:position(position), size(size), type(type), fuelAmount(fuelAmount), detectionRange(detectionRange), 
+Ship::Ship(array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive)
+:position(position), type(type), fuelAmount(fuelAmount), detectionRange(detectionRange), 
 health(health), isAlive(isAlive), initialFuelAmount(fuelAmount), initialHealth(health)
 {}
 
@@ -63,7 +63,6 @@ void Ship::sink()
 
 //gettery
 std::array<int, 2> Ship::getPosition() const {return position;}
-shipSize Ship::getSize() const {return size;}
 shipType Ship::getType() const {return type;}
 int Ship::getFuelAmount() const {return fuelAmount;}
 int Ship::getInitialFuelAmount() const {return initialFuelAmount;}

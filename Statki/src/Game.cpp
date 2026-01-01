@@ -83,13 +83,13 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
     switch (type)
     {
         case submarine:
-            return new Submarine(position, small, submarine, 50, 5, 100, true, 10);
+            return new Submarine(position, submarine, 50, 5, 100, true, 10);
         case aCarrier:
-            return new AircraftCarrier(position, large, aCarrier, 50, 7, 100);
+            return new AircraftCarrier(position, aCarrier, 50, 7, 100);
         case destroyer:
-            return new Destroyer(position, medium, destroyer, 50, 6, 100);
+            return new Destroyer(position, destroyer, 50, 6, 100);
         case cruiser:
-            return new Cruiser(position, large, cruiser, 50, 6, 100);
+            return new Cruiser(position, cruiser, 50, 6, 100);
         default:
             return nullptr;
     }

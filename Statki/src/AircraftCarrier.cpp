@@ -2,8 +2,8 @@
 
 using namespace std;
 
-AircraftCarrier::AircraftCarrier(array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, int aircraftAmount)
-:Ship(position, size, type, fuelAmount, detectionRange, health, isAlive), aircraftAmount(aircraftAmount), initialAircraftAmount(aircraftAmount)
+AircraftCarrier::AircraftCarrier(array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, int aircraftAmount)
+:Ship(position, type, fuelAmount, detectionRange, health, isAlive), aircraftAmount(aircraftAmount), initialAircraftAmount(aircraftAmount)
 {}
 
 bool AircraftCarrier::canAirStrike() const {return true;}

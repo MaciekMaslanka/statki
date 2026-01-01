@@ -2,9 +2,9 @@
 
 
     Submarine::Submarine(
-        std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, 
+        std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, 
         int torpedoesAmount)
-    :Ship(position, size, type, fuelAmount, detectionRange, health, isAlive), torpedoesAmount(torpedoesAmount), 
+    :Ship(position, type, fuelAmount, detectionRange, health, isAlive), torpedoesAmount(torpedoesAmount), 
     isUnderwater(false), turnsUnderwater(0), initialTorpedoesAmount(torpedoesAmount)
     {}
 

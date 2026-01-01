@@ -7,7 +7,7 @@ class AircraftCarrier : public Ship
         int aircraftAmount;
         int initialAircraftAmount;
     public:
-    AircraftCarrier(std::array<int, 2> position, shipSize size, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true, 
+    AircraftCarrier(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true, 
         int aircraftAmount=0);
 
     bool canAirStrike() const override;
