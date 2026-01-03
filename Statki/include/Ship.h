@@ -21,9 +21,9 @@ class Ship
     public:
         Ship(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive = true);
 
-        virtual bool shootAttack(Ship& target);
-        virtual bool torpedoAttack(Ship& target);
-        virtual bool airStrike(Ship& target);
+        virtual void shootAttack(Ship& target);
+        virtual void torpedoAttack(Ship& target);
+        virtual void airStrike(Ship& target);
 
         virtual bool canShoot() const;
         virtual bool canTorpedoAttack() const;
@@ -33,12 +33,12 @@ class Ship
         virtual bool canDive() const;
         virtual bool toogleDive();
 
+        virtual void takeDamage(float amount);
+        virtual void sink();
+        virtual void onNewTurn();
+
         void move(std::array<int, 2> targetPosition);
         int calculateMoveCost(std::array<int, 2> targetPosition);
-
-        virtual void takeDamage(float amount);
-
-        virtual void sink();
 
         //gettery
         std::array<int, 2> getPosition() const;

@@ -6,6 +6,7 @@ class Submarine : public Ship
     protected:
         bool isUnderwater;
         int turnsUnderwater;
+        int maxTurnsUnderwater = 3;
         int torpedoesAmount;
         int initialTorpedoesAmount;
 
@@ -15,7 +16,11 @@ class Submarine : public Ship
     bool canTorpedoAttack() const override;
     bool isStealth() const override;
     bool canDive() const override;
-    bool toogleDive() override;
+
+    void enterStealth();
+    void exitStealth();
+
+    void onNewTurn() override;
     
     //gettery
     bool getIsUnderwater() const;

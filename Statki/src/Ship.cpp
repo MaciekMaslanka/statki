@@ -15,10 +15,6 @@ Ship::Ship(array<int, 2> position, shipType type, int fuelAmount, int detectionR
 health(health), isAlive(isAlive), initialFuelAmount(fuelAmount), initialHealth(health)
 {}
 
-bool Ship::shootAttack(Ship& target) {return false;}
-bool Ship::torpedoAttack(Ship& target) {return false;}
-bool Ship::airStrike(Ship& target) {return false;}
-
 bool Ship::canShoot() const {return false;}
 bool Ship::canTorpedoAttack() const {return false;}
 bool Ship::canAirStrike() const {return false;}

@@ -179,3 +179,18 @@ void Board::toogleMoveMode(Ship* ship)
     }
 }
 bool Board::getIsInMoveMode() const {return isInMoveMode;}
+
+void Board::toogleAttackMode(Ship* ship)
+{
+    if (ship == nullptr)
+    {
+        isInAttackMode = false;
+        selectedShip = nullptr;
+    }
+    else
+    {
+        isInAttackMode = !isInAttackMode;
+        selectedShip = ship;
+    }
+}
+bool Board::getIsInAttackMode() const {return isInAttackMode;}

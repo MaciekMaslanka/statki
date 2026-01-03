@@ -16,6 +16,14 @@ const int movePointsPerTurn = 5;
 
 void Game::switchTurns()
 {
+    for (Ship* ship : currentPlayer->getFleet())
+    {
+        if (ship != nullptr)
+        {
+            ship->onNewTurn();
+        }
+    }
+
     if (currentPlayer == player1)
     {
         currentPlayer = player2;
@@ -122,6 +130,7 @@ void Game::beginGame()
     board = new Board(mapSize);
 
     //flota
+    //TO DO: sprawdzenie czy liczby nie są za duze albo male (<=0)
     cout<<"Podaj ilość okrętów podwodnych: ";
     cin>>shipsAmount[0];
     cout<<"Podaj ilość lotniskowców: ";
@@ -148,6 +157,7 @@ void Game::beginGame()
     {
         currentPlayer = player2;
     }
+
     gameLoop();
 }
 void Game::displayGame()
@@ -289,11 +299,10 @@ void Game::gameLoop()
 {
     while (true)
     {
+        //pojedyncza tura
         clearScreen();
         displayGame();
         char key = getKey();
-
-        bool canMoveToTile;
 
         //wlaczenie kursora
         if (key == cursorModeKey && !board->getIsInCursorMode())
@@ -335,12 +344,38 @@ void Game::gameLoop()
             }
         }
 
+        if (key == shootAttackKey || key == torpedoAttackKey || key == airStrikeKey)
+        {
+            if (board->getIsInMoveMode() || !board->getIsInCursorMode())
+            {
+                continue;
+            }
+            // TU SK0NCZYŁEM
+            switch (key)
+            {
+                case shootAttackKey:
+
+                    break;
+
+                case torpedoAttackKey:
+                    break;
+
+                case airStrikeKey:
+                    break;
+            }
+        }
+
         //wylaczanie trybow
         if (key == cancelKey)
         {
             if (board->getIsInMoveMode())
             {
                 board->toogleMoveMode(nullptr);
+                continue;
+            }
+            else if (board->getIsInAttackMode())
+            {
+                board->toogleAttackMode(nullptr);
                 continue;
             }
             else if (board->getIsInCursorMode())

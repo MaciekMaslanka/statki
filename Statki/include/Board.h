@@ -16,6 +16,7 @@ class Board
         std::array<int, 2> cursorPosition = {0, 0};
 
         bool isInMoveMode = false;
+        bool isInAttackMode = false;
 
         bool isVisible(int x, int y, const std::vector<Ship*>& fleet) const;
         bool isVisible(int x, int y, const Ship* ship) const;
@@ -36,6 +37,9 @@ class Board
 
         void toogleMoveMode(Ship* ship);
         bool getIsInMoveMode() const;
+
+        void toogleAttackMode(Ship* ship);
+        bool getIsInAttackMode() const;
 
         ~Board() = default;
 };

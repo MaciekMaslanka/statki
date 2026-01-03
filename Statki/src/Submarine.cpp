@@ -8,25 +8,48 @@
     isUnderwater(false), turnsUnderwater(0), initialTorpedoesAmount(torpedoesAmount)
     {}
 
-    bool Submarine::canTorpedoAttack() const {return true;}
-    bool Submarine::isStealth() const {return isUnderwater && isAlive;}
-    bool Submarine::canDive() const {return true;}
-    bool Submarine::toogleDive()
+    bool Submarine::canTorpedoAttack() const 
     {
-        if (!isAlive) return false;
-        isUnderwater = !isUnderwater;
-        if (isUnderwater)
+        if (isStealth() && torpedoesAmount <= 0)
         {
-            detectionRange /= 2;
+            return false;
         }
         else
         {
-            detectionRange *= 2;
-            turnsUnderwater = 0;
+            return true;
         }
-        return isUnderwater;
+    }
+    bool Submarine::isStealth() const {return isUnderwater && isAlive;}
+    bool Submarine::canDive() const {return true;}
+
+    void Submarine::enterStealth() 
+    {
+        if (!isUnderwater && turnsUnderwater > 0)
+        {
+            isUnderwater = true;
+        }
+    }
+    void Submarine:: exitStealth()
+    {
+        isUnderwater = false;
     }
     
+    void Submarine::onNewTurn()
+    {
+        if (!isStealth() && turnsUnderwater < maxTurnsUnderwater)
+        {
+            turnsUnderwater++;
+        }
+        if (isUnderwater)
+        {
+            turnsUnderwater--;
+            if (turnsUnderwater <= 0)
+            {
+                exitStealth();
+            }
+        }
+    }
+
     //gettery
     bool Submarine::getIsUnderwater() const {return isUnderwater;}
     int Submarine::getTurnsUnderwater() const {return turnsUnderwater;}
