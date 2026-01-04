@@ -163,7 +163,7 @@ void Game::beginGame()
 
     gameLoop();
 }
-void Game::displayGame()
+void Game::displayGame() // TO DO: przerobić ta metode
 {
     clearScreen();
     cout<<"Tura gracza "<<currentPlayer->getName()<<endl;
