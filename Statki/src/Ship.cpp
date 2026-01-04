@@ -14,15 +14,24 @@ Ship::Ship(array<int, 2> position, shipType type, int fuelAmount, int detectionR
 :position(position), type(type), fuelAmount(fuelAmount), detectionRange(detectionRange), 
 health(health), isAlive(isAlive), initialFuelAmount(fuelAmount), initialHealth(health)
 {}
-
+//ataki
 bool Ship::canShoot() const {return false;}
 bool Ship::canTorpedoAttack() const {return false;}
 bool Ship::canAirStrike() const {return false;}
+
+bool Ship::tryShootAttack(Ship* target) {return false;}
+bool Ship::tryTorpedoAttack(Ship* target) {return false;}
+bool Ship::tryAirStrike(Ship* target) {return false;}
+
+int Ship::getShootAttackDmg() const {return 0;}
+int Ship::getTorpedoAttackDmg() const {return 0;}
+int Ship::getAirStrikeDmg() const {return 0;}
 
 bool Ship::isStealth() const {return false;}
 bool Ship::canDive() const {return false;}
 bool Ship::toogleDive() {return false;}
 
+void Ship::onNewTurn() {};
 void Ship::move(array<int, 2> targetPosition)
 {
     int distance = calculateDistance(position, targetPosition);
@@ -48,13 +57,8 @@ void Ship::takeDamage(float amount)
     health -= amount;
     if (health <= 0)
     {
-        sink();
+        isAlive = false;
     }
-}
-
-void Ship::sink()
-{
-    isAlive = false;
 }
 
 //gettery

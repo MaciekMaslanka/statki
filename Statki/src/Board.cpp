@@ -62,8 +62,16 @@ void Board::drawTile(string symbol, const string& color, bool isCursorHere) cons
     {
         cout<<CURSOR;
     }
-        
-    cout<<color<<symbol<<RESET<<" ";
+    
+    if (symbol == DESTROYED)
+    {
+        cout<<color<<symbol<<RESET;
+    }
+    else
+    {
+        cout<<color<<symbol<<RESET<<" ";
+    }
+    
 }
 
 void Board::display(const vector<Ship*>& playerFleet)
@@ -81,7 +89,7 @@ void Board::display(const vector<Ship*>& playerFleet)
 
             if(tile == nullptr)
             {
-                if (visible && !isInMoveMode)
+                if (visible && !isInMoveMode && !isInAttackMode)
                 {
                     color = LIGHT_BLUE_WATER;
                 }
@@ -91,6 +99,17 @@ void Board::display(const vector<Ship*>& playerFleet)
                     if (isVisible(x, y, selectedShip))
                     {
                         color = YELLOW;
+                    }
+                    else
+                    {
+                        color = DARK_BLUE_WATER;
+                    }
+                }
+                else if (isInAttackMode)
+                {
+                    if (isVisible(x, y, selectedShip))
+                    {
+                        color = ATTACK_RANGE;
                     }
                     else
                     {
@@ -116,15 +135,23 @@ void Board::display(const vector<Ship*>& playerFleet)
                 }
                 else if (isPlayerShip)
                 {
-                    symbol = tile->getSymbol();
-                    if (tile->isStealth())
+                    if (tile == selectedShip)
                     {
-                        color = UNDERWATER_PLAYER_SHIP;
+                        color = SELECTED_PLAYER_SHIP;
                     }
                     else
                     {
-                        color = PLAYER_SHIP;
+                        symbol = tile->getSymbol();
+                        if (tile->isStealth())
+                        {
+                            color = UNDERWATER_PLAYER_SHIP;
+                        }
+                        else
+                        {
+                            color = PLAYER_SHIP;
+                        }
                     }
+
                 }
                 else if (visible && !tile->isStealth())
                 {

@@ -7,6 +7,11 @@ Player::Player(std::vector<Ship*> fleet, int movePoints, std::string name)
 {}
 
 void Player::addShip(Ship* ship) {fleet.push_back(ship);}
+void Player::useMovePoint()
+{
+    movePoints--;
+}
+
 //gettery
 std::vector<Ship*> Player::getFleet() const {return fleet;}
 int Player::getMovePoints() const {return movePoints;}

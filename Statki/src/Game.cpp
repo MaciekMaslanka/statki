@@ -5,12 +5,15 @@ using namespace std;
 
 const string SPLITTER = "\n-------------------------------------\n";
 
+//config
 const char cursorModeKey = 'c';
 const char moveKey = 'm';
-const char shootAttackKey = 'o';
-const char torpedoAttackKey = 't';
-const char airStrikeKey = 'a';
+const char shootAttackKey = 'j';
+const char torpedoAttackKey = 'k';
+const char airStrikeKey = 'l';
 const char cancelKey = 'q';
+const char endTurnKey = 'e';
+enum moveKeys{up='w', down='s', left='a', right='d'};
 
 const int movePointsPerTurn = 5;
 
@@ -91,13 +94,13 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
     switch (type)
     {
         case submarine:
-            return new Submarine(position, submarine, 50, 5, 100, true, 10);
+            return new Submarine(position, submarine, 50, 5, 100, true, 10, 5);
         case aCarrier:
-            return new AircraftCarrier(position, aCarrier, 50, 7, 100);
+            return new AircraftCarrier(position, aCarrier, 50, 7, 100, true, 100, 5);
         case destroyer:
-            return new Destroyer(position, destroyer, 50, 6, 100);
+            return new Destroyer(position, destroyer, 50, 6, 4, true);
         case cruiser:
-            return new Cruiser(position, cruiser, 50, 6, 100);
+            return new Cruiser(position, cruiser, 50, 6, 100, true);
         default:
             return nullptr;
     }
@@ -304,8 +307,12 @@ void Game::gameLoop()
         displayGame();
         char key = getKey();
 
+        bool isInCursorMode = board->getIsInCursorMode();
+        bool isInMoveMode = board->getIsInMoveMode();
+        bool isInAttackMode = board->getIsInAttackMode();
+
         //wlaczenie kursora
-        if (key == cursorModeKey && !board->getIsInCursorMode())
+        if (key == cursorModeKey && !isInCursorMode)
         {
             board->toogleCursorMode();
             continue;
@@ -313,8 +320,10 @@ void Game::gameLoop()
 
         if (key == moveKey)
         {
+            if (isInAttackMode) {continue;}
+
             //potwierdzenie ruchu
-            if (board->getIsInMoveMode())
+            if (isInMoveMode)
             {
                 Ship* tile = board->getShipUnderCursor();
                 if (tile == nullptr)
@@ -325,14 +334,14 @@ void Game::gameLoop()
                     {
                         board->updateShipPosition(selectedShip, targetPos);
                         board->toogleMoveMode(nullptr);
-                        currentPlayer->setMovePoints(currentPlayer->getMovePoints() - 1);
+                        currentPlayer->useMovePoint();
                         continue;
                     }
                 }
             }
 
             //wlaczenie trybu ruchu
-            if (board->getIsInCursorMode() && currentPlayer->getMovePoints() > 0)
+            if (isInCursorMode && currentPlayer->getMovePoints() > 0)
             {
                 Ship* ship = board->getShipUnderCursor();
                 if (ship != nullptr && isCurrentPlayerShip(ship) && ship->getIsAlive())
@@ -346,68 +355,131 @@ void Game::gameLoop()
 
         if (key == shootAttackKey || key == torpedoAttackKey || key == airStrikeKey)
         {
-            if (board->getIsInMoveMode() || !board->getIsInCursorMode())
+            if (!isInCursorMode || isInMoveMode) {continue;}
+
+            //potwierdzenie ataku
+            if (isInAttackMode)
             {
+                Ship* tile = board->getShipUnderCursor();
+                if (tile != nullptr && !isCurrentPlayerShip(tile) && tile->getIsAlive())
+                {
+                    switch (currentAttackType)
+                    {
+                        case shoot:
+                            if (selectedShip->tryShootAttack(tile))
+                            {
+                                board->toogleAttackMode(nullptr);
+                                currentPlayer->useMovePoint();
+                                currentAttackType = none;
+                            }
+                            break;
+                        case torpedo:
+                            if (selectedShip->tryTorpedoAttack(tile))
+                            {
+                                board->toogleAttackMode(nullptr);
+                                currentPlayer->useMovePoint();
+                                currentAttackType = none;
+                            }
+                            break;
+                        case air:
+                            
+                            if (selectedShip->tryAirStrike(tile))
+                            {
+                                board->toogleAttackMode(nullptr);
+                                currentPlayer->useMovePoint();
+                                currentAttackType = none;
+                            }
+                            break;
+                    }
+                }
                 continue;
             }
-            // TU SK0NCZYŁEM
-            switch (key)
+
+            //wlaczenie trybu ataku
+            Ship* ship = board->getShipUnderCursor();
+            if (ship != nullptr && isCurrentPlayerShip(ship) && ship->getIsAlive() && currentPlayer->getMovePoints() > 0)
             {
-                case shootAttackKey:
-
-                    break;
-
-                case torpedoAttackKey:
-                    break;
-
-                case airStrikeKey:
-                    break;
+                selectedShip = ship;
+                switch (key)
+                {
+                    case shootAttackKey:
+                        if (selectedShip->canShoot())
+                        {
+                            board->toogleAttackMode(selectedShip);
+                            currentAttackType = shoot;
+                        }
+                        break;
+                    case torpedoAttackKey:
+                        if (selectedShip->canTorpedoAttack())
+                        {
+                            board->toogleAttackMode(selectedShip);
+                            currentAttackType = torpedo;
+                        }
+                        break;
+                    case airStrikeKey:
+                        if (selectedShip->canAirStrike())
+                        {
+                            board->toogleAttackMode(selectedShip);
+                            currentAttackType = air;
+                        }
+                        break;
+                }
+                continue;
             }
         }
 
         //wylaczanie trybow
         if (key == cancelKey)
         {
-            if (board->getIsInMoveMode())
+            if (isInMoveMode)
             {
                 board->toogleMoveMode(nullptr);
-                continue;
             }
-            else if (board->getIsInAttackMode())
+            else if (isInAttackMode)
             {
                 board->toogleAttackMode(nullptr);
-                continue;
+                currentAttackType = none;
             }
-            else if (board->getIsInCursorMode())
+            else if (isInCursorMode)
             {
                 board->toogleCursorMode();
-                continue;
             }
+            continue;
         }
 
         //ruch kursorem
-        if (board->getIsInCursorMode())
+        if (isInCursorMode)
         {
             array<int, 2> offset = {0, 0};
             switch (key)
             {
-                case 'w':
+                case moveKeys::up:
                     offset = {0, -1};
                     break;
-                case 's':
+                case moveKeys::down:
                     offset = {0, 1};
                     break;
-                case 'a':
-                    offset = {-1, 0};
-                    break;
-                case 'd':
+                case moveKeys::right:
                     offset = {1, 0};
+                    break;
+                case moveKeys::left:
+                    offset = {-1, 0};
                     break;
                 default:
                     break;
             }
             board->moveCursor(offset);
             continue;
+        }
+
+        //zmiana tur
+        if (key == endTurnKey)
+        {
+            if (!isInAttackMode && !isInMoveMode && !isInCursorMode)
+            {
+                switchTurns();
+                continue;
+            }
         }
     }
 }

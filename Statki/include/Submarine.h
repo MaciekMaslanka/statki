@@ -9,11 +9,15 @@ class Submarine : public Ship
         int maxTurnsUnderwater = 3;
         int torpedoesAmount;
         int initialTorpedoesAmount;
+        int torpedoesDamage;
 
     public:
-    Submarine(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive=true, int torpedoesAmount=0);
+    Submarine(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive=true, int torpedoesAmount=0, int torpedoesDamage=5);
 
+    int getTorpedoAttackDmg() const override;
     bool canTorpedoAttack() const override;
+    bool tryTorpedoAttack(Ship* target) override;
+    
     bool isStealth() const override;
     bool canDive() const override;
 

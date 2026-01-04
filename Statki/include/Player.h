@@ -12,6 +12,7 @@ class Player
         Player(std::vector<Ship*> fleet, int movePoints, std::string name="");
         
         void addShip(Ship* ship);
+        void useMovePoint();
 
         //gettery
         std::vector<Ship*> getFleet() const;

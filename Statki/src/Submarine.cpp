@@ -3,11 +3,11 @@
 
     Submarine::Submarine(
         std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, 
-        int torpedoesAmount)
+        int torpedoesAmount, int torpedoesDamage)
     :Ship(position, type, fuelAmount, detectionRange, health, isAlive), torpedoesAmount(torpedoesAmount), 
-    isUnderwater(false), turnsUnderwater(0), initialTorpedoesAmount(torpedoesAmount)
+    isUnderwater(false), turnsUnderwater(0), initialTorpedoesAmount(torpedoesAmount), torpedoesDamage(torpedoesDamage)
     {}
-
+    int Submarine::getTorpedoAttackDmg() const {return torpedoesDamage; };
     bool Submarine::canTorpedoAttack() const 
     {
         if (isStealth() && torpedoesAmount <= 0)
@@ -19,6 +19,21 @@
             return true;
         }
     }
+    bool Submarine::tryTorpedoAttack(Ship* target)
+    {
+        int distanceToTarget = calculateDistance(position, target->getPosition());
+        if (torpedoesAmount > 0 && distanceToTarget <= detectionRange && !isUnderwater && !target->isStealth())
+        { 
+            torpedoesAmount--;
+            target->takeDamage(torpedoesDamage);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     bool Submarine::isStealth() const {return isUnderwater && isAlive;}
     bool Submarine::canDive() const {return true;}
 

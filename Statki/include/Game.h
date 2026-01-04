@@ -11,6 +11,8 @@
 #include "../include/Cruiser.h"
 #include "../include/platform.h"
 
+enum attackTypes{none, air, shoot, torpedo};
+
 class Game
 {
     private:
@@ -19,6 +21,7 @@ class Game
         Player* player2 = nullptr;
         Player* currentPlayer = nullptr;
         Ship* selectedShip = nullptr;
+        attackTypes currentAttackType = none;
 
         void switchTurns();
         void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);
