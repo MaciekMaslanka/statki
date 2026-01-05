@@ -17,14 +17,14 @@ class Board
 
         bool isInMoveMode = false;
         bool isInAttackMode = false;
-
-        bool isVisible(int x, int y, const std::vector<Ship*>& fleet) const;
-        bool isVisible(int x, int y, const Ship* ship) const;
         
         void drawTile(std::string symbol, const std::string& color, bool isCursorHere) const;
 
     public:
         Board(int size);
+        bool isVisible(int x, int y, const std::vector<Ship*>& fleet) const;
+        bool isVisible(int x, int y, const Ship* ship) const;
+        
         void placeFleet(const std::vector<Ship*>& fleet);
         void updateShipPosition(Ship* ship, std::array<int, 2> newPosition);
         void display(const std::vector<Ship*>& playerFleet);

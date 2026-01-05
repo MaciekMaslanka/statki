@@ -17,3 +17,4 @@ const std::string DESTROYED = "🔥";
 const std::string CURSOR = "\033[7m";
 
 const std::string YELLOW = "\033[33m";
+const std::string RED = "\033[31m";

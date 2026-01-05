@@ -138,6 +138,7 @@ void Board::display(const vector<Ship*>& playerFleet)
                     if (tile == selectedShip)
                     {
                         color = SELECTED_PLAYER_SHIP;
+                        symbol = tile->getSymbol();
                     }
                     else
                     {

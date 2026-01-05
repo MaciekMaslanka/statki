@@ -1,5 +1,6 @@
 #include "../include/Game.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -86,8 +87,6 @@ bool Game::isOccupied(array<int, 2> pos, const vector<array<int, 2>>& occupiedPo
     }
     return false;
 }
-        
-Game::Game() {}
 
 Ship* Game::createShip(shipType type, array<int, 2> position)
 {
@@ -105,6 +104,71 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
             return nullptr;
     }
 }
+void Game::updateActionHints()
+{
+    actionHints.clear();
+
+    if (!board->getIsInCursorMode())
+    {
+        actionHints.push_back(string(1, cursorModeKey)+"- wejdź w tryb kursora");
+        actionHints.push_back(string(1, endTurnKey)+"- zakończ turę");
+        return;
+    }
+    else
+    {
+        actionHints.push_back("w s a d- ruch kursorem");
+        if (board->getIsInMoveMode())
+        {
+            actionHints.push_back(string(1, moveKey)+"- potwierdź ruch");
+            actionHints.push_back(string(1, cancelKey)+"- anuluj");
+            return;
+        }
+        if (board->getIsInAttackMode())
+        {
+            switch (currentAttackType)
+            {
+                case attackTypes::air:
+                    actionHints.push_back(string(1, airStrikeKey)+"- potwierdź atak");
+                    break;
+                case attackTypes::shoot:
+                    actionHints.push_back(string(1, shootAttackKey)+"- potwierdź atak");
+                    break;
+                case attackTypes::torpedo:
+                    actionHints.push_back(string(1, torpedoAttackKey)+"- potwierdź atak");
+                    break;
+                default: break;
+            }
+            actionHints.push_back(string(1, cancelKey)+"- anuluj");
+            return;
+        }
+
+        if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive())
+        {
+            actionHints.push_back(string(1, moveKey)+"- ruch");
+            if (selectedShip->canShoot())
+            {
+                actionHints.push_back(string(1, shootAttackKey)+"- ostrzał");
+            }
+            if (selectedShip->canTorpedoAttack())
+            {
+                actionHints.push_back(string(1, torpedoAttackKey)+"- torpeda");
+            }
+            if (selectedShip->canAirStrike())
+            {
+                actionHints.push_back(string(1, airStrikeKey)+"- nalot");
+            }
+            return;
+        }
+        else
+        {
+            actionHints.push_back("Brak opcji");
+            return;
+        }
+    }
+    
+}
+
+Game::Game() {}
 
 //rozgrywka
 void Game::beginGame()
@@ -174,6 +238,7 @@ void Game::displayGame()
     cout<<SPLITTER;
     
     //statystyki
+    cout<<"Statystyki wybranego statku:\n";
     if (selectedShip != nullptr)
     {
         bool isAlive = selectedShip->getIsAlive();
@@ -184,14 +249,13 @@ void Game::displayGame()
         int fuel = selectedShip->getFuelAmount();
         int initFuel = selectedShip->getInitialFuelAmount();
 
-        cout<<"Statystyki wybranego statku:\n";
-        cout<<"Status: ";
         if (isAlive && isThisPlayerShip)
         {
+            cout<<"Status: ";
             if (isUnderwater) {cout<<"Aktywny, pod wodą\n";}
             else {cout<<"Aktywny\n";}
-            cout<<"HP: "<<(health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
-            cout<<"Paliwo: "<<(fuel / initFuel * 100)<<"% ("<<fuel<<"/"<<initFuel<<")\n";
+            cout<<"HP: "<<round((double)health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
+            cout<<"Paliwo: "<<round((double)fuel / initFuel * 100)<<"% ("<<fuel<<"/"<<initFuel<<")\n";
             if (selectedShip->canTorpedoAttack())
             {
                 int initTorpedo = selectedShip->getInitialTorpedoesAmount();
@@ -207,14 +271,24 @@ void Game::displayGame()
         }
         else if (!isThisPlayerShip)
         {
-            if (isAlive && !isUnderwater) 
+            array<int, 2> pos = selectedShip->getPosition();
+            if (board->isVisible(pos[0], pos[1], currentPlayer->getFleet()))
             {
-                cout<<"Aktywny\n";
-                cout<<"HP: "<<(health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
-                cout<<"Paliwo: ??\n";
+                cout<<"Status: ";
+                if (isAlive && !isUnderwater) 
+                {
+                    cout<<"Aktywny\n";
+                    cout<<"HP: "<<round((double)health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
+                    cout<<"Paliwo: ??\n";
+                }
+                else if (!isAlive) {cout<<"Zniszczony\n";}
+                else if (isUnderwater) {cout<<"Brak wybranego statku\n";}
             }
-            else if (!isAlive) {cout<<"Zniszczony\n";}
-            else if (isUnderwater) {cout<<"Brak wybranego statku\n";}
+            else
+            {
+                cout<<"Brak wybranego statku\n";
+            }
+
         }
         else {cout<<"Zniszczony\n";}
     }
@@ -222,7 +296,32 @@ void Game::displayGame()
     {
         cout<<"Brak wybranego statku\n";
     }
+
     //reszta wiadomosci
+    cout<<SPLITTER;
+    for (GameMessage msg : messages)
+    {
+        switch (msg.type)
+        {
+            case MessageTypes::info:
+                cout<<"[INFO] ";
+                break;
+            case MessageTypes::warning:
+                cout<<YELLOW<<"[OSTRZEŻENIE] ";
+                break;
+            case MessageTypes::error:
+                cout<<RED<<"[ERROR] ";
+                break;
+            default:
+                break;
+        }
+        cout<<msg.text<<RESET<<"\n";
+    }
+    cout<<"\n";
+    for (string hint : actionHints)
+    {
+        cout<<hint<<"\n";
+    }
 
 }
 void Game::gameLoop()
@@ -230,9 +329,10 @@ void Game::gameLoop()
     while (true)
     {
         //pojedyncza tura
+        updateActionHints();
         displayGame();
-        char key = getKey();
 
+        char key = getKey();
         bool isInCursorMode = board->getIsInCursorMode();
         bool isInMoveMode = board->getIsInMoveMode();
         bool isInAttackMode = board->getIsInAttackMode();
@@ -258,11 +358,27 @@ void Game::gameLoop()
                     int moveCost = selectedShip->calculateMoveCost(targetPos);
                     if (moveCost != -1 && currentPlayer->getMovePoints() > 0)
                     {
+                        messages.clear();
+                        messages.emplace_back("Ruch wykonany, zurzyto "+to_string(moveCost)+" jednostek paliwa", MessageTypes::info);
                         board->updateShipPosition(selectedShip, targetPos);
                         board->toogleMoveMode(nullptr);
                         currentPlayer->useMovePoint();
                         continue;
                     }
+                    else
+                    {
+                        messages.clear();
+                        messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
+                        messages.emplace_back("Ruch nieudany, cel jest za daleko", MessageTypes::warning);
+                        continue;
+                    }
+                }
+                else
+                {
+                    messages.clear();
+                    messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
+                    messages.emplace_back("Ruch nieudany, ta kratka jest już zajęta", MessageTypes::warning);
+                    continue;
                 }
             }
 
@@ -271,6 +387,7 @@ void Game::gameLoop()
             {
                 if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive())
                 {
+                    messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
                     board->toogleMoveMode(selectedShip);
                 }
                 continue;
@@ -295,6 +412,14 @@ void Game::gameLoop()
                                 board->toogleAttackMode(nullptr);
                                 currentPlayer->useMovePoint();
                                 currentAttackType = none;
+                                messages.clear();
+                                messages.emplace_back("Ostrzał udany", MessageTypes::info);
+                            }
+                            else
+                            {
+                                messages.clear();
+                                messages.emplace_back("Wybierz cel do ostrzału", MessageTypes::info);
+                                messages.emplace_back("Ostrzał nieudany", MessageTypes::warning);
                             }
                             break;
                         case torpedo:
@@ -303,6 +428,14 @@ void Game::gameLoop()
                                 board->toogleAttackMode(nullptr);
                                 currentPlayer->useMovePoint();
                                 currentAttackType = none;
+                                messages.clear();
+                                messages.emplace_back("Atak torpedą udany", MessageTypes::info);
+                            }
+                            else
+                            {
+                                messages.clear();
+                                messages.emplace_back("Wybierz cel torpedy", MessageTypes::info);
+                                messages.emplace_back("Atak torpedą nieudany", MessageTypes::warning);
                             }
                             break;
                         case air:
@@ -312,6 +445,14 @@ void Game::gameLoop()
                                 board->toogleAttackMode(nullptr);
                                 currentPlayer->useMovePoint();
                                 currentAttackType = none;
+                                messages.clear();
+                                messages.emplace_back("Nalot udany", MessageTypes::info);
+                            }
+                            else
+                            {
+                                messages.clear();
+                                messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
+                                messages.emplace_back("Nalot nieudany", MessageTypes::warning);
                             }
                             break;
                     }
@@ -327,6 +468,8 @@ void Game::gameLoop()
                     case shootAttackKey:
                         if (selectedShip->canShoot())
                         {
+                            messages.clear();
+                            messages.emplace_back("Wybierz cel do ostrzału", MessageTypes::info);
                             board->toogleAttackMode(selectedShip);
                             currentAttackType = shoot;
                         }
@@ -334,6 +477,8 @@ void Game::gameLoop()
                     case torpedoAttackKey:
                         if (selectedShip->canTorpedoAttack())
                         {
+                            messages.clear();
+                            messages.emplace_back("Wybierz cel torpedy", MessageTypes::info);
                             board->toogleAttackMode(selectedShip);
                             currentAttackType = torpedo;
                         }
@@ -341,6 +486,8 @@ void Game::gameLoop()
                     case airStrikeKey:
                         if (selectedShip->canAirStrike())
                         {
+                            messages.clear();
+                            messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
                             board->toogleAttackMode(selectedShip);
                             currentAttackType = air;
                         }
@@ -355,15 +502,20 @@ void Game::gameLoop()
         {
             if (isInMoveMode)
             {
+                messages.clear();
+                messages.emplace_back("Anulowano ruch", MessageTypes::info);
                 board->toogleMoveMode(nullptr);
             }
             else if (isInAttackMode)
             {
+                messages.clear();
+                messages.emplace_back("Anulowano atak", MessageTypes::info);
                 board->toogleAttackMode(nullptr);
                 currentAttackType = none;
             }
             else if (isInCursorMode)
             {
+                messages.clear();
                 board->toogleCursorMode();
             }
             continue;
@@ -404,6 +556,7 @@ void Game::gameLoop()
             if (!isInAttackMode && !isInMoveMode && !isInCursorMode)
             {
                 switchTurns();
+                messages.clear();
                 continue;
             }
         }

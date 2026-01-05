@@ -6,4 +6,10 @@ struct GameMessage
 {
     std::string text;
     MessageTypes type;
+
+    GameMessage(std::string text, MessageTypes type)
+    {
+        this->text = text;
+        this->type = type;
+    }
 };
