@@ -41,7 +41,9 @@ class Ship
 
         virtual bool isStealth() const;
         virtual bool canDive() const;
-        virtual bool toogleDive();
+        virtual void enterStealth();
+        virtual void leaveStealth();
+        virtual int getTurnsUnderwater() const;
 
         void takeDamage(float amount);
         virtual void onNewTurn();

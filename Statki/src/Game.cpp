@@ -9,6 +9,7 @@ const string SPLITTER = "\n-------------------------------------\n";
 //config
 const char cursorModeKey = 'c';
 const char moveKey = 'm';
+const char diveKey = 'n';
 const char shootAttackKey = 'j';
 const char torpedoAttackKey = 'k';
 const char airStrikeKey = 'l';
@@ -157,6 +158,11 @@ void Game::updateActionHints()
             {
                 actionHints.push_back(string(1, airStrikeKey)+"- nalot");
             }
+            if (selectedShip->canDive())
+            {
+                actionHints.push_back(string(1, diveKey)+"- wynurzenie/zanurzenie");
+            }
+            actionHints.push_back(string(1, cancelKey)+"- wyłącz kursor");
             return;
         }
         else
@@ -267,6 +273,10 @@ void Game::displayGame()
                 int initAircraft = selectedShip->getInitialAircraftAmount();
                 int aircraft = selectedShip->getAircraftAmount();
                 cout<<"Samoloty: "<<aircraft<<"/"<<initAircraft<<"\n";
+            }
+            if (selectedShip->canDive())
+            {
+                cout<<"Tury pod wodą: "<<selectedShip->getTurnsUnderwater()<<"\n";
             }
         }
         else if (!isThisPlayerShip)
@@ -457,6 +467,24 @@ void Game::gameLoop()
                             break;
                     }
                 }
+                else if (tile == nullptr)
+                {
+                    messages.clear();
+                    messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
+                    messages.emplace_back("Atak nieudany, brak wybranego celu", MessageTypes::warning);
+                }
+                else if (isCurrentPlayerShip(tile))
+                {
+                    messages.clear();
+                    messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
+                    messages.emplace_back("Atak nieudany, cel to twój statek", MessageTypes::warning);
+                }
+                else
+                {
+                    messages.clear();
+                    messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
+                    messages.emplace_back("Atak nieudany, cel jest już zniszczony", MessageTypes::warning);
+                }
                 continue;
             }
 
@@ -495,6 +523,34 @@ void Game::gameLoop()
                 }
                 continue;
             }
+        }
+        //zanurzenie
+        if (key == diveKey)
+        {
+            if (selectedShip != nullptr && selectedShip->getIsAlive() && isCurrentPlayerShip(selectedShip))
+            {
+                if (selectedShip->canDive() && selectedShip->getTurnsUnderwater() > 0)
+                {
+                    messages.clear();
+                    if (selectedShip->isStealth())
+                    {
+                        selectedShip->leaveStealth();
+                        messages.emplace_back("Statek się wynurzył", MessageTypes::info);
+                    }
+                    else
+                    {
+                        selectedShip->enterStealth();
+                        messages.emplace_back("Statek się zanurzył", MessageTypes::info);
+                        currentPlayer->useMovePoint();
+                    }
+                }
+                else if (selectedShip->getTurnsUnderwater() <= 0)
+                {
+                    messages.clear();
+                    messages.emplace_back("Ten statek nie może się zanurzyć.", MessageTypes::warning);
+                }
+            }
+            continue;;
         }
 
         //wylaczanie trybow

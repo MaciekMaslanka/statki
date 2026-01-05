@@ -35,7 +35,9 @@ int Ship::getInitialAircraftAmount() const {return 0;}
 
 bool Ship::isStealth() const {return false;}
 bool Ship::canDive() const {return false;}
-bool Ship::toogleDive() {return false;}
+int Ship::getTurnsUnderwater() const {return 0;};
+void Ship::enterStealth() {};
+void Ship::leaveStealth() {};
 
 void Ship::onNewTurn() {};
 void Ship::move(array<int, 2> targetPosition)

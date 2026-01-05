@@ -12,7 +12,8 @@ class Submarine : public Ship
         int torpedoesDamage;
 
     public:
-    Submarine(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive=true, int torpedoesAmount=0, int torpedoesDamage=5);
+    Submarine(std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive=true, 
+        int torpedoesAmount=0, int torpedoesDamage=5, int maxTurnsUnderwater=5);
 
     int getTorpedoAttackDmg() const override;
     bool canTorpedoAttack() const override;
@@ -21,14 +22,14 @@ class Submarine : public Ship
     bool isStealth() const override;
     bool canDive() const override;
 
-    void enterStealth();
-    void exitStealth();
+    void enterStealth() override;
+    void leaveStealth() override;
 
     void onNewTurn() override;
     
     //gettery
     bool getIsUnderwater() const;
-    int getTurnsUnderwater() const;
+    int getTurnsUnderwater() const override;
     int getTorpedoesAmount() const override;
     int getInitialTorpedoesAmount() const override;
     char getSymbol() const override;

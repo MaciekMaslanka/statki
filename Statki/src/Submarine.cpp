@@ -3,9 +3,9 @@
 
     Submarine::Submarine(
         std::array<int, 2> position, shipType type, int fuelAmount, int detectionRange, float health, bool isAlive, 
-        int torpedoesAmount, int torpedoesDamage)
+        int torpedoesAmount, int torpedoesDamage, int maxTurnsUnderwater)
     :Ship(position, type, fuelAmount, detectionRange, health, isAlive), torpedoesAmount(torpedoesAmount), 
-    isUnderwater(false), turnsUnderwater(0), initialTorpedoesAmount(torpedoesAmount), torpedoesDamage(torpedoesDamage)
+    isUnderwater(false), turnsUnderwater(maxTurnsUnderwater), maxTurnsUnderwater(maxTurnsUnderwater), initialTorpedoesAmount(torpedoesAmount), torpedoesDamage(torpedoesDamage)
     {}
     int Submarine::getTorpedoAttackDmg() const {return torpedoesDamage; };
     bool Submarine::canTorpedoAttack() const 
@@ -37,14 +37,14 @@
     bool Submarine::isStealth() const {return isUnderwater && isAlive;}
     bool Submarine::canDive() const {return true;}
 
-    void Submarine::enterStealth() 
+    void Submarine::enterStealth()
     {
         if (!isUnderwater && turnsUnderwater > 0)
         {
             isUnderwater = true;
         }
     }
-    void Submarine:: exitStealth()
+    void Submarine::leaveStealth()
     {
         isUnderwater = false;
     }
@@ -60,7 +60,7 @@
             turnsUnderwater--;
             if (turnsUnderwater <= 0)
             {
-                exitStealth();
+                leaveStealth();
             }
         }
     }
