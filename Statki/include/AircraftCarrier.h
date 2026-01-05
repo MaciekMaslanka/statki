@@ -15,7 +15,8 @@ class AircraftCarrier : public Ship
     bool tryAirStrike(Ship* target) override;
 
     //gettery
-    int getAircraftAmount() const;
+    int getAircraftAmount() const override;
+    int getInitialAircraftAmount() const override;
     char getSymbol() const override;
     //settery
     void setAircraftAmount(int aircraftAmount);

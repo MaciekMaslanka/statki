@@ -14,11 +14,14 @@ class Destroyer : public Ship
 
     bool canShoot() const override;
     bool tryShootAttack(Ship* target) override;
+
     bool canTorpedoAttack() const override;
     bool tryTorpedoAttack(Ship* target) override;
 
     int getShootAttackDmg() const;
     int getTorpedoAttackDmg() const;
+    int getTorpedoesAmount() const override;
+    int getInitialTorpedoesAmount() const override;
 
     char getSymbol() const override;
 };

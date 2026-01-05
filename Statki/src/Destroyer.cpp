@@ -38,5 +38,7 @@ bool Destroyer::tryTorpedoAttack(Ship* target)
 
 int Destroyer::getShootAttackDmg() const {return shootAttackDmg;}
 int Destroyer::getTorpedoAttackDmg() const {return torpedoAttackDmg;}
+int Destroyer::getTorpedoesAmount() const {return torpedoesAmount;}
+int Destroyer::getInitialTorpedoesAmount() const {return initialTorpedoesAmount;}
 
 char Destroyer::getSymbol() const {return 'D';}

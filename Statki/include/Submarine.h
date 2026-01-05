@@ -29,7 +29,8 @@ class Submarine : public Ship
     //gettery
     bool getIsUnderwater() const;
     int getTurnsUnderwater() const;
-    int getTorpedoesAmount() const;
+    int getTorpedoesAmount() const override;
+    int getInitialTorpedoesAmount() const override;
     char getSymbol() const override;
     //settery
     void setIsUnderwater(bool isUnderwater);

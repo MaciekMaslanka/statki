@@ -30,8 +30,14 @@ class Ship
         virtual bool tryAirStrike(Ship* target);
 
         virtual int getShootAttackDmg() const;
+
         virtual int getTorpedoAttackDmg() const;
+        virtual int getTorpedoesAmount() const;
+        virtual int getInitialTorpedoesAmount() const;
+
         virtual int getAirStrikeDmg() const;
+        virtual int getAircraftAmount() const;
+        virtual int getInitialAircraftAmount() const;
 
         virtual bool isStealth() const;
         virtual bool canDive() const;

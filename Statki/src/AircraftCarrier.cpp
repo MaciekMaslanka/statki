@@ -26,6 +26,7 @@ bool AircraftCarrier::tryAirStrike(Ship* target)
 
 //gettery
 int AircraftCarrier::getAircraftAmount() const {return aircraftAmount;}
+int AircraftCarrier::getInitialAircraftAmount() const {return initialAircraftAmount;}
 char AircraftCarrier::getSymbol() const {return 'A';}
 //settery
 void AircraftCarrier::setAircraftAmount(int aircraftAmount) {this->aircraftAmount = aircraftAmount;}

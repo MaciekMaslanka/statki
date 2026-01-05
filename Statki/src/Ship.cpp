@@ -24,8 +24,14 @@ bool Ship::tryTorpedoAttack(Ship* target) {return false;}
 bool Ship::tryAirStrike(Ship* target) {return false;}
 
 int Ship::getShootAttackDmg() const {return 0;}
+
 int Ship::getTorpedoAttackDmg() const {return 0;}
+int Ship::getTorpedoesAmount() const {return 0;}
+int Ship::getInitialTorpedoesAmount() const {return 0;} 
+
 int Ship::getAirStrikeDmg() const {return 0;}
+int Ship::getAircraftAmount() const {return 0;}
+int Ship::getInitialAircraftAmount() const {return 0;}
 
 bool Ship::isStealth() const {return false;}
 bool Ship::canDive() const {return false;}

@@ -69,6 +69,7 @@
     bool Submarine::getIsUnderwater() const {return isUnderwater;}
     int Submarine::getTurnsUnderwater() const {return turnsUnderwater;}
     int Submarine::getTorpedoesAmount() const {return torpedoesAmount;}
+    int Submarine::getInitialTorpedoesAmount() const {return initialTorpedoesAmount;}
     char Submarine::getSymbol() const {return 'S';}
     //settery
     void Submarine::setIsUnderwater(bool isUnderwater) {this->isUnderwater = isUnderwater;}
