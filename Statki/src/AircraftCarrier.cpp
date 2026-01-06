@@ -14,7 +14,7 @@ bool AircraftCarrier::tryAirStrike(Ship* target)
     int distanceToTarget = calculateDistance(position, target->getPosition());
     if (aircraftAmount > 0 && distanceToTarget <= detectionRange && !target->isStealth())
     {
-        aircraftAmount - 10;
+        aircraftAmount -= 10;
         target->takeDamage(airStrikeDamage);
         return true;
     }

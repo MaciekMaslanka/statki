@@ -159,6 +159,11 @@ void Board::display(const vector<Ship*>& playerFleet)
                     symbol = tile->getSymbol();
                     color = ENEMY_SHIP;
                 }
+                else if (visible)
+                {
+                    symbol = "~";
+                    color = LIGHT_BLUE_WATER;
+                }
                 else
                 {
                     symbol = "~";

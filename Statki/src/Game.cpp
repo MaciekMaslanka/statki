@@ -136,6 +136,7 @@ void Game::updateActionHints()
     else
     {
         actionHints.push_back("w s a d- ruch kursorem");
+        actionHints.push_back(string(1, cancelKey)+"- wyłącz kursor");
         if (board->getIsInMoveMode())
         {
             actionHints.push_back(string(1, moveKey)+"- potwierdź ruch");
@@ -180,7 +181,6 @@ void Game::updateActionHints()
             {
                 actionHints.push_back(string(1, diveKey)+"- wynurzenie/zanurzenie");
             }
-            actionHints.push_back(string(1, cancelKey)+"- wyłącz kursor");
             return;
         }
         else
@@ -324,7 +324,7 @@ void Game::displayGame()
     {
         cout<<"Brak wybranego statku\n";
     }
-
+    cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<"\n";
     //reszta wiadomosci
     cout<<SPLITTER;
     for (GameMessage msg : messages)
@@ -653,7 +653,8 @@ void Game::gameLoop()
 void Game::endGame(Player* winner)
 {
     clearScreen();
-    cout<<"WYGRYWA GRACZ "<<winner->getName()<<"\n\n";
+    cout<<"Wygrywa gracz "<<winner->getName()<<"\n";
+    cout<<"Gratulacje!\n\n";
 }
 Game::~Game()
 {
