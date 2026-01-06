@@ -39,7 +39,13 @@ int Ship::getTurnsUnderwater() const {return 0;};
 void Ship::enterStealth() {};
 void Ship::leaveStealth() {};
 
-void Ship::onNewTurn() {};
+void Ship::onNewTurn() 
+{
+    if (fuelAmount <= 0)
+    {
+        fuelAmount += 2;
+    }
+};
 void Ship::move(array<int, 2> targetPosition)
 {
     int distance = calculateDistance(position, targetPosition);

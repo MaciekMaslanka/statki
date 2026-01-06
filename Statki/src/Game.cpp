@@ -40,6 +40,24 @@ void Game::switchTurns()
     currentPlayer->setMovePoints(movePointsPerTurn);
 }
 
+bool Game::checkForEndGame()
+{
+    Player* otherPlayer;
+    if (currentPlayer == player1) {otherPlayer = player2;}
+    else {otherPlayer = player1;}
+
+    vector<Ship*> fleet = otherPlayer->getFleet();
+    for (Ship* ship : fleet)
+    {
+        if (ship->getIsAlive())
+        {
+            return false;
+        }
+    }
+    //jesli wszystkie statki zniszczone
+    return true;
+}
+
 void Game::placePlayerShips(const int shipsAmount[4], Player* player, int mapSize, int xMax, int xMin)
 {
     vector<array<int, 2>> occupiedSpots;
@@ -94,13 +112,13 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
     switch (type)
     {
         case submarine:
-            return new Submarine(position, submarine, 50, 5, 100, true, 10, 5);
+            return new Submarine(position, submarine, 999, 100, 2, true, 99);
         case aCarrier:
-            return new AircraftCarrier(position, aCarrier, 50, 7, 100, true, 100, 5);
+            return new AircraftCarrier(position, aCarrier, 999, 100, 2, true, 100, 99);
         case destroyer:
-            return new Destroyer(position, destroyer, 50, 6, 4, true, 5);
+            return new Destroyer(position, destroyer, 999, 100, 2, true, 5, 5, 5);
         case cruiser:
-            return new Cruiser(position, cruiser, 50, 6, 100, true);
+            return new Cruiser(position, cruiser, 999, 5, 2, true, 5);
         default:
             return nullptr;
     }
@@ -338,7 +356,8 @@ void Game::gameLoop()
 {
     while (true)
     {
-        //pojedyncza tura
+        //pojedyncza klatka
+
         updateActionHints();
         displayGame();
 
@@ -354,6 +373,7 @@ void Game::gameLoop()
             continue;
         }
 
+        //ruch
         if (key == moveKey)
         {
             if (isInAttackMode) {continue;}
@@ -375,11 +395,18 @@ void Game::gameLoop()
                         currentPlayer->useMovePoint();
                         continue;
                     }
-                    else
+                    else if (moveCost = -1)
                     {
                         messages.clear();
                         messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
                         messages.emplace_back("Ruch nieudany, cel jest za daleko", MessageTypes::warning);
+                        continue;
+                    }
+                    else
+                    {
+                        messages.clear();
+                        messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
+                        messages.emplace_back("Ruch nieudany, nie masz punktów ruchu", MessageTypes::warning);
                         continue;
                     }
                 }
@@ -404,6 +431,7 @@ void Game::gameLoop()
             }
         }
 
+        //atak
         if (key == shootAttackKey || key == torpedoAttackKey || key == airStrikeKey)
         {
             if (!isInCursorMode || isInMoveMode) {continue;}
@@ -466,6 +494,7 @@ void Game::gameLoop()
                             }
                             break;
                     }
+                    if (checkForEndGame()) {break;}
                 }
                 else if (tile == nullptr)
                 {
@@ -524,6 +553,7 @@ void Game::gameLoop()
                 continue;
             }
         }
+
         //zanurzenie
         if (key == diveKey)
         {
@@ -617,4 +647,17 @@ void Game::gameLoop()
             }
         }
     }
+    //zakonczenie gry
+    endGame(currentPlayer);
+}
+void Game::endGame(Player* winner)
+{
+    clearScreen();
+    cout<<"WYGRYWA GRACZ "<<winner->getName()<<"\n\n";
+}
+Game::~Game()
+{
+    delete board;
+    delete player1;
+    delete player2;
 }

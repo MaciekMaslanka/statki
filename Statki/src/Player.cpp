@@ -18,3 +18,12 @@ int Player::getMovePoints() const {return movePoints;}
 std::string Player::getName() const {return name;}
 //settery
 void Player::setMovePoints(int movePoints) {this->movePoints = movePoints;}
+
+Player::~Player()
+{
+    for (Ship* ship : fleet)
+    {
+        delete ship;
+    }
+    fleet.clear();
+}

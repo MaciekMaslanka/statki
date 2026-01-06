@@ -41,5 +41,5 @@ class Board
         void toogleAttackMode(Ship* ship);
         bool getIsInAttackMode() const;
 
-        ~Board() = default;
+        ~Board();
 };

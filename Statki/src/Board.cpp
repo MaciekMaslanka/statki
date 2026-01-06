@@ -222,3 +222,9 @@ void Board::toogleAttackMode(Ship* ship)
     }
 }
 bool Board::getIsInAttackMode() const {return isInAttackMode;}
+
+Board::~Board()
+{
+    selectedShip = nullptr;
+    grid.clear();
+}

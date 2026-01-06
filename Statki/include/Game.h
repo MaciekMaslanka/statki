@@ -32,6 +32,8 @@ class Game
         void placePlayerShips(const int shipsAmount[4], Player* player1, int mapSize, int xMax, int xMin);
         bool isOccupied(std::array<int, 2> pos, const std::vector<std::array<int, 2>>& occupiedPositions);
         bool isCurrentPlayerShip(Ship* ship) const;
+        bool checkForEndGame();
+        void endGame(Player* winner);
         void displayGame();
         
     public:
@@ -40,5 +42,5 @@ class Game
         void beginGame();
         void gameLoop();
 
-        ~Game() = default;
+        ~Game();
 };

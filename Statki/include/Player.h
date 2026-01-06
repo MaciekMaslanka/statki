@@ -20,5 +20,5 @@ class Player
         std::string getName() const;
         //settery
         void setMovePoints(int movePoints);
-        ~Player() = default;
+        ~Player();
 };

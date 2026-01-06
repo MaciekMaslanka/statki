@@ -63,6 +63,11 @@
                 leaveStealth();
             }
         }
+        
+        if (fuelAmount <= 0)
+        {
+            fuelAmount += 2;
+        }
     }
 
     //gettery
