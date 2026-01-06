@@ -62,16 +62,7 @@ void Board::drawTile(string symbol, const string& color, bool isCursorHere) cons
     {
         cout<<CURSOR;
     }
-    
-    if (symbol == DESTROYED)
-    {
-        cout<<color<<symbol<<RESET;
-    }
-    else
-    {
-        cout<<color<<symbol<<RESET<<" ";
-    }
-    
+    cout<<color<<symbol<<RESET<<" ";
 }
 
 void Board::display(const vector<Ship*>& playerFleet)

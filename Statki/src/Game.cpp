@@ -129,17 +129,17 @@ void Game::updateActionHints()
 
     if (!board->getIsInCursorMode())
     {
-        actionHints.push_back(string(1, cursorModeKey)+"- wejdź w tryb kursora");
-        actionHints.push_back(string(1, endTurnKey)+"- zakończ turę");
+        actionHints.push_back(string(1, cursorModeKey)+"- wejdz w tryb kursora");
+        actionHints.push_back(string(1, endTurnKey)+"- zakoncz ture");
         return;
     }
     else
     {
         actionHints.push_back("w s a d- ruch kursorem");
-        actionHints.push_back(string(1, cancelKey)+"- wyłącz kursor");
+        actionHints.push_back(string(1, cancelKey)+"- wylacz kursor");
         if (board->getIsInMoveMode())
         {
-            actionHints.push_back(string(1, moveKey)+"- potwierdź ruch");
+            actionHints.push_back(string(1, moveKey)+"- potwierdz ruch");
             actionHints.push_back(string(1, cancelKey)+"- anuluj");
             return;
         }
@@ -148,13 +148,13 @@ void Game::updateActionHints()
             switch (currentAttackType)
             {
                 case attackTypes::air:
-                    actionHints.push_back(string(1, airStrikeKey)+"- potwierdź atak");
+                    actionHints.push_back(string(1, airStrikeKey)+"- potwierdz atak");
                     break;
                 case attackTypes::shoot:
-                    actionHints.push_back(string(1, shootAttackKey)+"- potwierdź atak");
+                    actionHints.push_back(string(1, shootAttackKey)+"- potwierdz atak");
                     break;
                 case attackTypes::torpedo:
-                    actionHints.push_back(string(1, torpedoAttackKey)+"- potwierdź atak");
+                    actionHints.push_back(string(1, torpedoAttackKey)+"- potwierdz atak");
                     break;
                 default: break;
             }
@@ -167,7 +167,7 @@ void Game::updateActionHints()
             actionHints.push_back(string(1, moveKey)+"- ruch");
             if (selectedShip->canShoot())
             {
-                actionHints.push_back(string(1, shootAttackKey)+"- ostrzał");
+                actionHints.push_back(string(1, shootAttackKey)+"- ostrzal");
             }
             if (selectedShip->canTorpedoAttack())
             {
@@ -199,7 +199,7 @@ void Game::beginGame()
 {
     srand(time(NULL));
     string name1, name2;
-    int shipsAmount[4] = {0, 0, 0, 0}; //podwodne, lotniskowce, niszczyciele, krążowniki
+    int shipsAmount[4] = {0, 0, 0, 0}; //podwodne, lotniskowce, niszczyciele, krazowniki
     int mapSize;
 
     //nicki graczy
@@ -215,20 +215,20 @@ void Game::beginGame()
         cin>>mapSize;
         if (mapSize < 20 || mapSize > 50)
         {
-            cout<<"Nieprawidłowy rozmiar mapy. Spróbuj ponownie.\n";
+            cout<<"Nieprawidlowy rozmiar mapy. Sprobuj ponownie.\n";
         }
     } while (mapSize < 20 || mapSize > 50);
     board = new Board(mapSize);
 
     //flota
-    //TO DO: sprawdzenie czy liczby nie są za duze albo male (<=0)
-    cout<<"Podaj ilość okrętów podwodnych: ";
+    //TO DO: sprawdzenie czy liczby nie sa za duze albo male (<=0)
+    cout<<"Podaj ilosc okretow podwodnych: ";
     cin>>shipsAmount[0];
-    cout<<"Podaj ilość lotniskowców: ";
+    cout<<"Podaj ilosc lotniskowcow: ";
     cin>>shipsAmount[1];
-    cout<<"Podaj ilość niszczycieli: ";
+    cout<<"Podaj ilosc niszczycieli: ";
     cin>>shipsAmount[2];
-    cout<<"Podaj ilość krążowników: ";
+    cout<<"Podaj ilosc krazownikow: ";
     cin>>shipsAmount[3];
 
     vector<Ship*> fleet1;
@@ -276,7 +276,7 @@ void Game::displayGame()
         if (isAlive && isThisPlayerShip)
         {
             cout<<"Status: ";
-            if (isUnderwater) {cout<<"Aktywny, pod wodą\n";}
+            if (isUnderwater) {cout<<"Aktywny, pod woda\n";}
             else {cout<<"Aktywny\n";}
             cout<<"HP: "<<round((double)health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
             cout<<"Paliwo: "<<round((double)fuel / initFuel * 100)<<"% ("<<fuel<<"/"<<initFuel<<")\n";
@@ -294,7 +294,7 @@ void Game::displayGame()
             }
             if (selectedShip->canDive())
             {
-                cout<<"Tury pod wodą: "<<selectedShip->getTurnsUnderwater()<<"\n";
+                cout<<"Tury pod woda: "<<selectedShip->getTurnsUnderwater()<<"\n";
             }
         }
         else if (!isThisPlayerShip)
@@ -324,7 +324,7 @@ void Game::displayGame()
     {
         cout<<"Brak wybranego statku\n";
     }
-    cout<<"Pozostałe punkty ruchu: "<<currentPlayer->getMovePoints()<<"\n";
+    cout<<"Pozostale punkty ruchu: "<<currentPlayer->getMovePoints()<<"\n";
     //reszta wiadomosci
     cout<<SPLITTER;
     for (GameMessage msg : messages)
@@ -335,7 +335,7 @@ void Game::displayGame()
                 cout<<"[INFO] ";
                 break;
             case MessageTypes::warning:
-                cout<<YELLOW<<"[OSTRZEŻENIE] ";
+                cout<<YELLOW<<"[OSTRZEZENIE] ";
                 break;
             case MessageTypes::error:
                 cout<<RED<<"[ERROR] ";
@@ -406,7 +406,7 @@ void Game::gameLoop()
                     {
                         messages.clear();
                         messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
-                        messages.emplace_back("Ruch nieudany, nie masz punktów ruchu", MessageTypes::warning);
+                        messages.emplace_back("Ruch nieudany, nie masz punktow ruchu", MessageTypes::warning);
                         continue;
                     }
                 }
@@ -414,7 +414,7 @@ void Game::gameLoop()
                 {
                     messages.clear();
                     messages.emplace_back("Wybierz cel ruchu", MessageTypes::info);
-                    messages.emplace_back("Ruch nieudany, ta kratka jest już zajęta", MessageTypes::warning);
+                    messages.emplace_back("Ruch nieudany, ta kratka jest juz zajeta", MessageTypes::warning);
                     continue;
                 }
             }
@@ -451,13 +451,13 @@ void Game::gameLoop()
                                 currentPlayer->useMovePoint();
                                 currentAttackType = none;
                                 messages.clear();
-                                messages.emplace_back("Ostrzał udany", MessageTypes::info);
+                                messages.emplace_back("Ostrzal udany", MessageTypes::info);
                             }
                             else
                             {
                                 messages.clear();
-                                messages.emplace_back("Wybierz cel do ostrzału", MessageTypes::info);
-                                messages.emplace_back("Ostrzał nieudany", MessageTypes::warning);
+                                messages.emplace_back("Wybierz cel do ostrzalu", MessageTypes::info);
+                                messages.emplace_back("Ostrzal nieudany", MessageTypes::warning);
                             }
                             break;
                         case torpedo:
@@ -467,13 +467,13 @@ void Game::gameLoop()
                                 currentPlayer->useMovePoint();
                                 currentAttackType = none;
                                 messages.clear();
-                                messages.emplace_back("Atak torpedą udany", MessageTypes::info);
+                                messages.emplace_back("Atak torpeda udany", MessageTypes::info);
                             }
                             else
                             {
                                 messages.clear();
                                 messages.emplace_back("Wybierz cel torpedy", MessageTypes::info);
-                                messages.emplace_back("Atak torpedą nieudany", MessageTypes::warning);
+                                messages.emplace_back("Atak torpeda nieudany", MessageTypes::warning);
                             }
                             break;
                         case air:
@@ -506,13 +506,13 @@ void Game::gameLoop()
                 {
                     messages.clear();
                     messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
-                    messages.emplace_back("Atak nieudany, cel to twój statek", MessageTypes::warning);
+                    messages.emplace_back("Atak nieudany, cel to twoj statek", MessageTypes::warning);
                 }
                 else
                 {
                     messages.clear();
                     messages.emplace_back("Wybierz cel do nalotu", MessageTypes::info);
-                    messages.emplace_back("Atak nieudany, cel jest już zniszczony", MessageTypes::warning);
+                    messages.emplace_back("Atak nieudany, cel jest juz zniszczony", MessageTypes::warning);
                 }
                 continue;
             }
@@ -526,7 +526,7 @@ void Game::gameLoop()
                         if (selectedShip->canShoot())
                         {
                             messages.clear();
-                            messages.emplace_back("Wybierz cel do ostrzału", MessageTypes::info);
+                            messages.emplace_back("Wybierz cel do ostrzalu", MessageTypes::info);
                             board->toogleAttackMode(selectedShip);
                             currentAttackType = shoot;
                         }
@@ -557,7 +557,7 @@ void Game::gameLoop()
         //zanurzenie
         if (key == diveKey)
         {
-            if (selectedShip != nullptr && selectedShip->getIsAlive() && isCurrentPlayerShip(selectedShip))
+            if (selectedShip != nullptr && selectedShip->getIsAlive() && isCurrentPlayerShip(selectedShip) && currentPlayer->getMovePoints() > 0)
             {
                 if (selectedShip->canDive() && selectedShip->getTurnsUnderwater() > 0)
                 {
@@ -565,19 +565,19 @@ void Game::gameLoop()
                     if (selectedShip->isStealth())
                     {
                         selectedShip->leaveStealth();
-                        messages.emplace_back("Statek się wynurzył", MessageTypes::info);
+                        messages.emplace_back("Statek sie wynurzyl", MessageTypes::info);
                     }
                     else
                     {
                         selectedShip->enterStealth();
-                        messages.emplace_back("Statek się zanurzył", MessageTypes::info);
-                        currentPlayer->useMovePoint();
+                        messages.emplace_back("Statek sie zanurzyl", MessageTypes::info); 
                     }
+                    currentPlayer->useMovePoint();
                 }
                 else if (selectedShip->getTurnsUnderwater() <= 0)
                 {
                     messages.clear();
-                    messages.emplace_back("Ten statek nie może się zanurzyć.", MessageTypes::warning);
+                    messages.emplace_back("Ten statek nie moze sie zanurzyc.", MessageTypes::warning);
                 }
             }
             continue;;

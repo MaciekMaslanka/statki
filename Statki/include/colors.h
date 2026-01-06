@@ -13,7 +13,7 @@ const std::string UNDERWATER_PLAYER_SHIP = "\033[32m";
 const std::string SELECTED_PLAYER_SHIP = "\033[96m";
 const std::string ATTACK_RANGE = "\033[91m";
 
-const std::string DESTROYED = "🔥";
+const std::string DESTROYED = "X";
 const std::string CURSOR = "\033[7m";
 
 const std::string YELLOW = "\033[33m";
