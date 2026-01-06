@@ -12,6 +12,7 @@ bool Cruiser::tryShootAttack(Ship* target)
     if (distanceToTarget <= detectionRange && !target->isStealth())
     {
         target->takeDamage(shootAttackDmg);
+        hasAttackedThisTurn = true;
         return true;
     }
     else

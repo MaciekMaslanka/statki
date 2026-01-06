@@ -12,6 +12,7 @@ bool Destroyer::tryShootAttack(Ship* target)
     if (distanceToTarget <= detectionRange && !target->isStealth())
     {
         target->takeDamage(shootAttackDmg);
+        hasAttackedThisTurn = true;
         return true;
     }
     else
@@ -28,6 +29,7 @@ bool Destroyer::tryTorpedoAttack(Ship* target)
     {
         target->takeDamage(torpedoAttackDmg);
         torpedoesAmount--;
+        hasAttackedThisTurn = true;
         return true;
     }
     else

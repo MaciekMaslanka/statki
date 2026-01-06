@@ -26,6 +26,7 @@
         { 
             torpedoesAmount--;
             target->takeDamage(torpedoesDamage);
+            hasAttackedThisTurn = true;
             return true;
         }
         else
@@ -68,6 +69,7 @@
         {
             fuelAmount += 2;
         }
+        hasAttackedThisTurn = false;
     }
 
     //gettery

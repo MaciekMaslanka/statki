@@ -75,37 +75,38 @@ void Board::display(const vector<Ship*>& playerFleet)
             Ship* tile = grid[y][x];
             string symbol = "~";
             string color = DARK_BLUE_WATER;
-            bool visible  = isVisible(x, y, playerFleet);
             bool isCursorHere = (isInCursorMode && cursorPosition[0] == x && cursorPosition[1] == y);
+
+            bool visibleForPlayer  = isVisible(x, y, playerFleet);
+            bool inActionRange = false;
+            if (isInAttackMode)
+            {
+                inActionRange = isVisible(x, y, selectedShip);
+            }
+            if (isInMoveMode)
+            {
+                array<int, 2> pos = selectedShip->getPosition();
+                int distance = abs(x - pos[0]) + abs(y - pos[1]);
+                inActionRange = (isVisible(x, y, selectedShip) && distance <=selectedShip->getFuelAmount());
+            }
 
             if(tile == nullptr)
             {
-                if (visible && !isInMoveMode && !isInAttackMode)
+                if (!visibleForPlayer)
+                {
+                    color = DARK_BLUE_WATER;
+                }
+                else if (isInMoveMode && inActionRange)
+                {
+                    color = YELLOW;
+                }
+                else if (isInAttackMode && inActionRange)
+                {
+                    color = ATTACK_RANGE;
+                }
+                else
                 {
                     color = LIGHT_BLUE_WATER;
-                }
-                else if (isInMoveMode)
-                {
-                    //sprawdzanie czy moze sie tam przesunac
-                    if (isVisible(x, y, selectedShip))
-                    {
-                        color = YELLOW;
-                    }
-                    else
-                    {
-                        color = DARK_BLUE_WATER;
-                    }
-                }
-                else if (isInAttackMode)
-                {
-                    if (isVisible(x, y, selectedShip))
-                    {
-                        color = ATTACK_RANGE;
-                    }
-                    else
-                    {
-                        color = DARK_BLUE_WATER;
-                    }
                 }
             }
             else
@@ -145,17 +146,28 @@ void Board::display(const vector<Ship*>& playerFleet)
                     }
 
                 }
-                else if (visible && !tile->isStealth())
+                else if (visibleForPlayer && !tile->isStealth())
                 {
                     symbol = tile->getSymbol();
                     color = ENEMY_SHIP;
                 }
-                else if (visible)
+                else if (visibleForPlayer && tile->isStealth())
                 {
                     symbol = "~";
-                    color = LIGHT_BLUE_WATER;
+                    if (inActionRange && isInAttackMode)
+                    {
+                        color = ATTACK_RANGE;
+                    }
+                    else if (inActionRange && isInMoveMode)
+                    {
+                        color = YELLOW;
+                    }
+                    else
+                    {
+                        color = LIGHT_BLUE_WATER;
+                    }
                 }
-                else
+                else if (!visibleForPlayer)
                 {
                     symbol = "~";
                     color = DARK_BLUE_WATER;
@@ -218,6 +230,10 @@ void Board::toogleAttackMode(Ship* ship)
     }
 }
 bool Board::getIsInAttackMode() const {return isInAttackMode;}
+void Board::placeCursorAtCenter()
+{
+    cursorPosition = {mapSize/2, mapSize/2};
+}
 
 Board::~Board()
 {

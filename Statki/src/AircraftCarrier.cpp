@@ -16,6 +16,7 @@ bool AircraftCarrier::tryAirStrike(Ship* target)
     {
         aircraftAmount -= 10;
         target->takeDamage(airStrikeDamage);
+        hasAttackedThisTurn = true;
         return true;
     }
     else

@@ -15,6 +15,7 @@ class Ship
         float health;
         float initialHealth;
         bool isAlive;
+        bool hasAttackedThisTurn = false;
         
         int calculateDistance(std::array<int, 2> from, std::array<int, 2> to);
 
@@ -61,6 +62,7 @@ class Ship
         bool getIsAlive() const;
         int getDetectionRange() const;
         virtual char getSymbol() const;
+        bool getHasAttackedThisTurn() const;
         //settery
         void setPosition(std::array<int, 2>targetPosition);
         void setFuelAmount(int targetFuelAmount);

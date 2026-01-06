@@ -45,6 +45,7 @@ void Ship::onNewTurn()
     {
         fuelAmount += 2;
     }
+    hasAttackedThisTurn = false;
 };
 void Ship::move(array<int, 2> targetPosition)
 {
@@ -85,6 +86,7 @@ float Ship::getInitialHealth() const {return initialHealth;}
 bool Ship::getIsAlive() const {return isAlive;}
 int Ship::getDetectionRange() const {return detectionRange;}
 char Ship::getSymbol() const {return '?';}
+bool Ship::getHasAttackedThisTurn() const {return hasAttackedThisTurn;}
 //settery
 void Ship::setPosition(std::array<int, 2>targetPosition) {position = targetPosition;}
 void Ship::setFuelAmount(int targetFuelAmount) {fuelAmount = targetFuelAmount;}

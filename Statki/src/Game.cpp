@@ -112,13 +112,13 @@ Ship* Game::createShip(shipType type, array<int, 2> position)
     switch (type)
     {
         case submarine:
-            return new Submarine(position, submarine, 999, 100, 2, true, 99);
+            return new Submarine(position, submarine, 20, 3, 15, true, 6, 10, 3);
         case aCarrier:
-            return new AircraftCarrier(position, aCarrier, 999, 100, 2, true, 100, 99);
+            return new AircraftCarrier(position, aCarrier, 15, 10, 40, true, 60, 15);
         case destroyer:
-            return new Destroyer(position, destroyer, 999, 100, 2, true, 5, 5, 5);
+            return new Destroyer(position, destroyer, 25, 5, 20, true, 4, 6, 10);
         case cruiser:
-            return new Cruiser(position, cruiser, 999, 5, 2, true, 5);
+            return new Cruiser(position, cruiser, 18, 7, 30, true, 6);
         default:
             return nullptr;
     }
@@ -221,15 +221,21 @@ void Game::beginGame()
     board = new Board(mapSize);
 
     //flota
-    //TO DO: sprawdzenie czy liczby nie sa za duze albo male (<=0)
-    cout<<"Podaj ilosc okretow podwodnych: ";
-    cin>>shipsAmount[0];
-    cout<<"Podaj ilosc lotniskowcow: ";
-    cin>>shipsAmount[1];
-    cout<<"Podaj ilosc niszczycieli: ";
-    cin>>shipsAmount[2];
-    cout<<"Podaj ilosc krazownikow: ";
-    cin>>shipsAmount[3];
+
+    if (mapSize <= 30)
+    {
+        shipsAmount[0] = 1; //podwodne
+        shipsAmount[1] = 1; //lotniskowce
+        shipsAmount[2] = 2; //niszczyciele
+        shipsAmount[3] = 2; //krazowniki
+    }
+    else
+    {
+        shipsAmount[0] = 2;
+        shipsAmount[1] = 1;
+        shipsAmount[2] = 3;
+        shipsAmount[3] = 2;
+    }
 
     vector<Ship*> fleet1;
     vector<Ship*> fleet2;
@@ -296,20 +302,21 @@ void Game::displayGame()
             {
                 cout<<"Tury pod woda: "<<selectedShip->getTurnsUnderwater()<<"\n";
             }
+            cout<<"Czy już atakował: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
         }
         else if (!isThisPlayerShip)
         {
             array<int, 2> pos = selectedShip->getPosition();
             if (board->isVisible(pos[0], pos[1], currentPlayer->getFleet()))
             {
-                cout<<"Status: ";
                 if (isAlive && !isUnderwater) 
                 {
-                    cout<<"Aktywny\n";
+                    cout<<"Status: Aktywny\n";
                     cout<<"HP: "<<round((double)health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
                     cout<<"Paliwo: ??\n";
+                    cout<<"Czy już atakował: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
                 }
-                else if (!isAlive) {cout<<"Zniszczony\n";}
+                else if (!isAlive) {cout<<"Status: Zniszczony\n";}
                 else if (isUnderwater) {cout<<"Brak wybranego statku\n";}
             }
             else
@@ -518,7 +525,8 @@ void Game::gameLoop()
             }
 
             //wlaczenie trybu ataku
-            if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive() && currentPlayer->getMovePoints() > 0)
+            if (selectedShip != nullptr && isCurrentPlayerShip(selectedShip) && selectedShip->getIsAlive() 
+            && currentPlayer->getMovePoints() > 0 && !selectedShip->getHasAttackedThisTurn())
             {
                 switch (key)
                 {
@@ -551,6 +559,11 @@ void Game::gameLoop()
                         break;
                 }
                 continue;
+            }
+            else if (selectedShip->getHasAttackedThisTurn())
+            {
+                messages.clear();
+                messages.emplace_back("Ten statek już atakował podczas tej tury!", MessageTypes::warning);
             }
         }
 
@@ -642,6 +655,7 @@ void Game::gameLoop()
             if (!isInAttackMode && !isInMoveMode && !isInCursorMode)
             {
                 switchTurns();
+                board->placeCursorAtCenter();
                 messages.clear();
                 continue;
             }

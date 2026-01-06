@@ -40,6 +40,7 @@ class Board
 
         void toogleAttackMode(Ship* ship);
         bool getIsInAttackMode() const;
+        void placeCursorAtCenter();
 
         ~Board();
 };
