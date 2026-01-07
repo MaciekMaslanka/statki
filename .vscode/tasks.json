@@ -3,12 +3,25 @@
         {
             "label": "build statki",
             "type": "shell",
-            "command": "/usr/bin/g++",
+            "command": "g++",
             "args": [
+                "-std=c++20",
                 "-g",
-                "${workspaceFolder}/Statki/*.cpp",
+                "-Iinclude",
+                "Statki/src/main.cpp",
+                "Statki/src/Game.cpp",
+                "Statki/src/AircraftCarrier.cpp",
+                "Statki/src/Board.cpp",
+                "Statki/src/Cruiser.cpp",
+                "Statki/src/Destroyer.cpp",
+                "Statki/src/Player.cpp",
+                "Statki/src/Ship.cpp",
+                "Statki/src/Submarine.cpp",
                 "-o",
-                "${workspaceFolder}/Statki/main"
+                "statki"
+            ],
+            "problemMatcher": [
+                "$gcc"
             ]
         }
     ],

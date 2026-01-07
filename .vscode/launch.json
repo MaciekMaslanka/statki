@@ -9,7 +9,7 @@
             "name": "(Default) exterior console",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/Statki/main",
+            "program": "${workspaceRoot}/statki",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/Statki",
