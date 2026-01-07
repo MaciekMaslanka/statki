@@ -302,7 +302,7 @@ void Game::displayGame()
             {
                 cout<<"Tury pod woda: "<<selectedShip->getTurnsUnderwater()<<"\n";
             }
-            cout<<"Czy już atakował: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
+            cout<<"Czy juz atakowal: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
         }
         else if (!isThisPlayerShip)
         {
@@ -314,7 +314,7 @@ void Game::displayGame()
                     cout<<"Status: Aktywny\n";
                     cout<<"HP: "<<round((double)health / initHealth * 100)<<"% ("<<health<<"/"<<initHealth<<")\n";
                     cout<<"Paliwo: ??\n";
-                    cout<<"Czy już atakował: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
+                    cout<<"Czy juz atakowal: "<<(selectedShip->getHasAttackedThisTurn() == true ? "Tak" : "Nie")<<"\n";
                 }
                 else if (!isAlive) {cout<<"Status: Zniszczony\n";}
                 else if (isUnderwater) {cout<<"Brak wybranego statku\n";}
